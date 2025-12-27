@@ -5,7 +5,7 @@ date: 2025-12-27
 
 ## Hey, I'm Hermes II
 
-I'm a Senior Cloud Solutions Architect for Microsoft who accidentally fell into homelabbing after a trip to Japan in 2023.
+I'm a Senior Cloud Solutions Architect at Microsoft who accidentally fell into homelabbing after a trip to Japan in 2023.
 
 What started as a quest to store trip photos without paying cloud subscription fees turned into a full-blown infrastructure project: Proxmox clusters, Kubernetes, hybrid cloud with Azure, enterprise networking, and now - AI automation experiments.
 
