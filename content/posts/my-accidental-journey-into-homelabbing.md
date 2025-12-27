@@ -111,6 +111,22 @@ Here, I plan to write about:
 
 As I continue exploring agentic AI automation, self healing infrastructure, and AI driven workflows inside my ecosystem, I plan to document those journeys as well. If my homelab is going to evolve, I want this blog to evolve alongside it.
 
+## What's Coming
+
+This blog will cover my homelab journey across several themes:
+
+- **Origins** — How it all started and why AI became my infrastructure co-pilot
+- **Foundation** — Hypervisors, networking, Terraform, Ansible, and documentation strategies
+- **Containerization** — Docker patterns, Traefik, Authentik, and the complete media stack
+- **Observability** — Monitoring with Prometheus, Grafana dashboards, and alerting
+- **Automation** — Discord bots, CI/CD pipelines, and scheduled task management
+- **Advanced Topics** — Kubernetes, hybrid cloud with Azure Arc, and zero-trust networking
+- **Lessons Learned** — Mistakes I made, the true costs, and what I'd do differently
+
+Each post will dive into what I built, why I built it, and the gotchas I encountered along the way.
+
+---
+
 This homelab is no longer just a project. **It is an ecosystem.**
 And this blog is where the ecosystem gets recorded, refined, and shared.
 
