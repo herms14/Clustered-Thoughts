@@ -3,9 +3,9 @@ title: "About"
 date: 2025-12-27
 ---
 
-## Hey, I'm Hermes
+## Hey, I'm Hermes II
 
-I'm a senior engineer who accidentally fell into homelabbing after a trip to Japan in 2023.
+I'm a Senior Cloud Solutions Architect for Microsoft who accidentally fell into homelabbing after a trip to Japan in 2023.
 
 What started as a quest to store trip photos without paying cloud subscription fees turned into a full-blown infrastructure project: Proxmox clusters, Kubernetes, hybrid cloud with Azure, enterprise networking, and now - AI automation experiments.
 
@@ -24,7 +24,7 @@ This is where I document:
 ```
 ├── Compute: Proxmox VE cluster (3 nodes)
 ├── Networking: TP-Link Omada SDN + OPNsense
-├── Storage: Synology DS923+ (10TB)
+├── Storage: Synology DS923+ (20TB)
 ├── Containers: Docker + Kubernetes
 ├── Automation: Ansible + GitLab CI/CD
 ├── Monitoring: Prometheus + Grafana
@@ -34,7 +34,7 @@ This is where I document:
 ## Connect
 
 - **GitHub**: [herms14](https://github.com/herms14)
-- **LinkedIn**: [hermesmiraflor](https://linkedin.com/in/hermesmiraflor)
+- **LinkedIn**: [hermesmiraflor](https://www.linkedin.com/in/hrmsmrflr/)
 
 ---
 
