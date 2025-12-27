@@ -24,7 +24,6 @@ By December of 2023, I was already deep into researching what kind of NAS to get
 
 Once the NAS was running smoothly, I began wondering what else I could improve at home. That was when I remembered an unused Raspberry Pi tucked in a drawer, a hand me down from an officemate that I had never found a use for. Suddenly, I had one. I set up Pi-hole with Unbound to clean up DNS traffic and speed up my browsing. It was meant to be a tiny upgrade, but once everything worked seamlessly, something in my brain flipped.
 
-> Working theory: once you optimize one part of your setup, your mind immediately starts looking for the next thing to improve.
 
 ## The Self-Hosted Media Stack
 
