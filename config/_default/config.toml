@@ -1,0 +1,30 @@
+baseurl = "https://herms14.github.io/Clustered-Thoughts/"
+languageCode = "en-us"
+theme = "hugo-theme-stack"
+title = "Clustered Thoughts"
+
+# Theme i18n support
+DefaultContentLanguage = "en"
+
+# Set hasCJKLanguage to true for CJK languages
+hasCJKLanguage = false
+
+[languages]
+    [languages.en]
+        languageName = "English"
+        title = "Clustered Thoughts"
+        weight = 1
+        [languages.en.params]
+            description = "A homelab journey - from trip photos to full-blown infrastructure"
+
+[pagination]
+    pagerSize = 5
+
+[permalinks]
+    posts = "/posts/:slug/"
+    page = "/:slug/"
+
+[taxonomies]
+    category = "categories"
+    tag = "tags"
+    series = "series"

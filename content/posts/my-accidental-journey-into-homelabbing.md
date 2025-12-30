@@ -1,7 +1,15 @@
 ---
 title: "My Accidental Journey Into Homelabbing: From Trip Photos to Full-Blown Infrastructure"
+description: "How a trip to Japan and the fear of losing cloud access led me to build a full homelab ecosystem"
 date: 2025-12-25
-categories: ["Homelab", "Origins"]
+slug: my-accidental-journey-into-homelabbing
+categories:
+    - Homelab
+tags:
+    - origins
+    - synology
+    - proxmox
+    - networking
 ---
 
 It all started from a trip to Japan back in 2023. I took a ridiculous amount of videos and photos, tiny slices of memory I wanted to keep forever while exploring that wonderful country. When I got home and started sorting through everything, it hit me just how important these moments were. Naturally, I uploaded them to Google Photos like I always did, until I got that familiar notification that I was out of space and needed to pay for more. That made me pause. If I kept paying every month just to store my own memories, I would eventually spend enough to buy a NAS anyway, and I would also gain something the cloud could never give me: real privacy and full control over my data.

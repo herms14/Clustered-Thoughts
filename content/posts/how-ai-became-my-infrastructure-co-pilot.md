@@ -1,11 +1,16 @@
 ---
 title: "How AI Became My Infrastructure Co-Pilot"
-date: 2025-12-27
-draft: false
 description: "How Claude Code accelerated my homelab journey by 10x - real examples, workflows, and lessons learned"
-tags: ["homelab", "ai", "claude", "automation", "devops"]
-categories: ["homelab"]
-author: "Hermes Miraflor II"
+date: 2025-12-27
+slug: how-ai-became-my-infrastructure-co-pilot
+categories:
+    - Homelab
+    - Automation
+tags:
+    - ai
+    - claude
+    - automation
+    - devops
 ---
 
 It all started with frustration.

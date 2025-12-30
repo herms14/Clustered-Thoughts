@@ -1,6 +1,12 @@
 ---
 title: "About"
 date: 2025-12-27
+slug: "about"
+menu:
+    main:
+        weight: 4
+        params:
+            icon: user
 ---
 
 ## Hey, I'm Hermes II
@@ -38,4 +44,4 @@ This is where I document:
 
 ---
 
-*This blog is built with Hugo and the Nomad Tech theme, deployed on GitHub Pages.*
+*This blog is built with Hugo and the Stack theme, deployed on GitHub Pages.*

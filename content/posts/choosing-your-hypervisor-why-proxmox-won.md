@@ -1,7 +1,17 @@
 ---
 title: "Choosing Your Hypervisor: Why Proxmox VE Won"
+description: "Comparing Proxmox VE, VMware ESXi, and Hyper-V for homelab use - and why Proxmox emerged as the winner"
 date: 2025-12-30
-categories: ["Homelab", "Foundation", "Infrastructure"]
+slug: choosing-your-hypervisor-why-proxmox-won
+categories:
+    - Homelab
+    - Infrastructure
+tags:
+    - proxmox
+    - virtualization
+    - hypervisor
+    - esxi
+    - hyper-v
 ---
 
 Proxmox VE emerged as the best hypervisor for my homelab because it is free, enterprise-capable, hardware-agnostic, and operationally efficient. Compared to ESXi and Hyper-V, it delivers clustering, containers, and automation without licensing friction. My current two-node Proxmox cluster runs more than 18 virtual machines and LXC containers reliably on commodity hardware.
