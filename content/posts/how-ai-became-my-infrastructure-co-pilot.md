@@ -139,7 +139,7 @@ I described the symptoms to Claude:
 
 The debugging process was methodical:
 
-1. **Check the basics**: Both VMs had the same `/etc/resolv.conf` pointing to my OPNsense firewall's DNS server at `192.168.91.30`. That ruled out configuration drift.
+1. **Check the basics**: Both VMs had the same `/etc/resolv.conf` pointing to my Pi-hole DNS server at `192.168.90.53`. That ruled out configuration drift.
 
 2. **Test DNS directly**: Using `dig` from both hosts showed the same results - the DNS server was responding correctly to both.
 
@@ -149,7 +149,7 @@ The debugging process was methodical:
 
 ```json
 {
-  "dns": ["192.168.91.30"]
+  "dns": ["192.168.90.53"]
 }
 ```
 

@@ -22,8 +22,8 @@ This is where I document:
 ## The Stack
 
 ```
-├── Compute: Proxmox VE cluster (3 nodes)
-├── Networking: TP-Link Omada SDN + OPNsense
+├── Compute: Proxmox VE cluster (2 nodes)
+├── Networking: TP-Link Omada SDN + Pi-hole DNS
 ├── Storage: Synology DS923+ (20TB)
 ├── Containers: Docker + Kubernetes
 ├── Automation: Ansible + GitLab CI/CD
@@ -38,4 +38,4 @@ This is where I document:
 
 ---
 
-*This blog is built with Hugo and the Terminal theme, deployed on GitHub Pages.*
+*This blog is built with Hugo and the Nomad Tech theme, deployed on GitHub Pages.*

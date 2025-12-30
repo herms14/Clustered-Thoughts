@@ -1,84 +1,87 @@
 baseURL = 'https://herms14.github.io/Clustered-Thoughts/'
-languageCode = 'en-us'
-title = 'Clustered Thoughts'
-theme = 'terminal'
+defaultContentLanguage = "en"
+theme = "nomad-tech"
 
 [pagination]
-pagerSize = 5
+  pagerSize = 6
+
+[taxonomies]
+  category = "categories"
+  tag = "tags"
 
 enableRobotsTXT = true
 buildDrafts = false
 buildFuture = false
 buildExpired = false
 
-[params]
-  # Terminal theme specific settings
-  contentTypeName = "posts"
-  themeColor = "green"  # Options: orange, blue, red, green, pink
-  showMenuItems = 3
-  fullWidthTheme = false
-  centerTheme = true
-  autoCover = true
-  showLastUpdated = false
-
-  # Site info
-  author = "Hermes Miraflor II"
-  description = "A homelab journey - from trip photos to full-blown infrastructure"
-  keywords = "homelab,infrastructure,kubernetes,networking,self-hosting,devops"
-
-  # Social
-  github = "herms14"
-  linkedin = "hermesmiraflor"
-
-[params.twitter]
-  creator = ""
-  site = ""
-
-  # Footer
-  showFooter = true
-  showCopyright = true
-  showThemeInfo = true
-
-[params.logo]
-  logoText = "~/clustered-thoughts"
-  logoHomeLink = "/"
-
 [languages]
   [languages.en]
-    languageName = "English"
-    title = "Clustered Thoughts"
-    subtitle = "A homelab journey"
-    owner = "Hermes Miraflor II"
-    menuMore = "Show more"
-    readMore = "Read more"
-    readOtherPosts = "Read other posts"
-    newerPosts = "Newer posts"
-    olderPosts = "Older posts"
-    missingContentMessage = "Page not found..."
-    missingBackButtonLabel = "Back to home page"
+    languageCode = "en-US"
+    title = "Clustered Thoughts - Homelab Journey"
+    weight = 1
 
-    [languages.en.params.logo]
-      logoText = "~/clustered-thoughts"
-      logoHomeLink = "/"
+[params]
+  author = "Hermes Miraflor II"
+  logo = "CLUSTERED-THOUGHTS"
+  subtitle = "Homelab Enthusiast • Infrastructure Builder • Tech Explorer"
+  description = "A homelab journey - from trip photos to full-blown infrastructure. Sharing lessons learned, mistakes made, and patterns that work."
 
-    [languages.en.menu]
-      [[languages.en.menu.main]]
-        identifier = "posts"
-        name = "Posts"
-        url = "/posts/"
-        weight = 1
-      [[languages.en.menu.main]]
-        identifier = "about"
-        name = "About"
-        url = "/about/"
-        weight = 2
-      [[languages.en.menu.main]]
-        identifier = "tags"
-        name = "Tags"
-        url = "/tags/"
-        weight = 3
+  [[params.social]]
+    name = "GitHub"
+    class = "github"
+    icon = "💻"
+    description = "Homelab infrastructure code and configs"
+    url = "https://github.com/herms14"
+    button_text = "View Repos"
+
+  [[params.social]]
+    name = "LinkedIn"
+    class = "linkedin"
+    icon = "💼"
+    description = "Professional profile and connections"
+    url = "https://linkedin.com/in/hermesmiraflor"
+    button_text = "Connect"
+
+  [[params.portfolio]]
+    title = "Proxmox Cluster"
+    type = "Infrastructure"
+    icon = "🖥️"
+    description = "2-node Proxmox VE cluster running 18+ VMs and containers"
+    tags = ["Proxmox", "Virtualization", "LXC"]
+    project_url = "/posts/choosing-your-hypervisor-why-proxmox-won/"
+
+  [[params.portfolio]]
+    title = "Kubernetes Cluster"
+    type = "Container Orchestration"
+    icon = "☸️"
+    description = "9-node K8s cluster with 3 controllers and 6 workers"
+    tags = ["Kubernetes", "Containerd", "Calico"]
+
+  [[params.portfolio]]
+    title = "Media Stack"
+    type = "Self-Hosted Services"
+    icon = "🎬"
+    description = "Complete Arr stack with Jellyfin, automated downloads"
+    tags = ["Docker", "Jellyfin", "Radarr", "Sonarr"]
+
+  [[params.portfolio]]
+    title = "Infrastructure as Code"
+    type = "Automation"
+    icon = "🔧"
+    description = "Terraform + Ansible for reproducible deployments"
+    tags = ["Terraform", "Ansible", "GitLab CI"]
+
+  [[params.contact]]
+    icon = "💻"
+    name = "GitHub"
+    value = "herms14"
+
+  [[params.contact]]
+    icon = "💼"
+    name = "LinkedIn"
+    value = "hermesmiraflor"
 
 [module]
   [module.hugoVersion]
     extended = true
-    min = "0.90.0"
+    min = "0.100.0"
