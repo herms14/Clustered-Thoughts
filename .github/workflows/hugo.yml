@@ -6,6 +6,10 @@ on:
     branches:
       - main
   workflow_dispatch:
+  schedule:
+    # Run daily at 9am Manila time (1am UTC)
+    # This auto-publishes posts with dates that have now passed
+    - cron: '0 1 * * *'
 
 permissions:
   contents: read
