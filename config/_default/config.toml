@@ -1,6 +1,6 @@
 baseurl = "https://herms14.github.io/Clustered-Thoughts/"
 languageCode = "en-us"
-theme = "hugo-theme-stack"
+theme = "PaperMod"
 title = "Clustered Thoughts"
 
 # Theme i18n support
@@ -8,6 +8,12 @@ DefaultContentLanguage = "en"
 
 # Set hasCJKLanguage to true for CJK languages
 hasCJKLanguage = false
+
+# Enable emoji
+enableEmoji = true
+
+# Build drafts in dev
+buildDrafts = false
 
 [languages]
     [languages.en]
@@ -18,13 +24,19 @@ hasCJKLanguage = false
             description = "A homelab journey - from trip photos to full-blown infrastructure"
 
 [pagination]
-    pagerSize = 5
+    pagerSize = 10
 
 [permalinks]
     posts = "/posts/:slug/"
-    page = "/:slug/"
 
 [taxonomies]
     category = "categories"
     tag = "tags"
     series = "series"
+
+[outputs]
+    home = ["HTML", "RSS", "JSON"]
+
+[minify]
+    disableXML = true
+    minifyOutput = true

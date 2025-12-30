@@ -1,65 +1,71 @@
-# Theme Parameters
-mainSections = ["posts"]
-featuredImageField = "image"
-rssFullContent = true
+# PaperMod Theme Parameters
+env = "production"
+description = "A homelab journey - from trip photos to full-blown infrastructure"
+author = "Hermes Miraflor II"
+defaultTheme = "auto"
+ShowReadingTime = true
+ShowShareButtons = true
+ShowPostNavLinks = true
+ShowBreadCrumbs = true
+ShowCodeCopyButtons = true
+ShowWordCount = false
+ShowRssButtonInSectionTermList = true
+UseHugoToc = true
+disableSpecial1stPost = false
+disableScrollToTop = false
+hidemeta = false
+hideSummary = false
+showtoc = true
+tocopen = false
 
-[favicon]
-    # Leave empty to use default favicon
-
-[footer]
-    since = 2025
-    customText = ""
-
-[dateFormat]
-    published = "Jan 02, 2006"
-    lastUpdated = "Jan 02, 2006 15:04 MST"
-
-[sidebar]
-    emoji = ""
-    subtitle = "Homelab Enthusiast | Infrastructure Builder | Tech Explorer"
-    [sidebar.avatar]
-        enabled = true
-        local = false
-        src = "https://avatars.githubusercontent.com/u/herms14"
-
-[article]
-    math = false
-    toc = true
-    readingTime = true
-    [article.license]
-        enabled = false
-
-[comments]
+[profileMode]
     enabled = false
+    title = "Clustered Thoughts"
+    subtitle = "Homelab Enthusiast | Infrastructure Builder | Tech Explorer"
+    imageUrl = ""
+    imageTitle = ""
+    imageWidth = 120
+    imageHeight = 120
+    [[profileMode.buttons]]
+        name = "Posts"
+        url = "posts"
+    [[profileMode.buttons]]
+        name = "Tags"
+        url = "tags"
 
-[widgets]
-    homepage = [
-        { type = "search" },
-        { type = "archives", limit = 5 },
-        { type = "categories", limit = 10 },
-        { type = "tag-cloud", limit = 10 }
-    ]
-    page = [
-        { type = "toc" }
-    ]
+[homeInfoParams]
+    Title = "Clustered Thoughts"
+    Content = """
+Welcome to my homelab journey! I'm Hermes, a Cloud Solutions Architect who accidentally fell into homelabbing after a trip to Japan.
 
-[opengraph]
-    [opengraph.twitter]
-        site = ""
-        card = "summary_large_image"
+Here I document lessons learned, infrastructure patterns, security practices, and the inevitable escalation that comes with every "small improvement."
+"""
 
-[defaultImage]
-    [defaultImage.opengraph]
-        enabled = false
-        local = false
-        src = ""
+[[socialIcons]]
+    name = "github"
+    url = "https://github.com/herms14"
 
-[colorScheme]
-    toggle = true
-    default = "auto"
+[[socialIcons]]
+    name = "linkedin"
+    url = "https://linkedin.com/in/hermesmiraflor"
 
-[imageProcessing]
-    [imageProcessing.cover]
-        enabled = true
-    [imageProcessing.content]
-        enabled = true
+[[socialIcons]]
+    name = "rss"
+    url = "index.xml"
+
+[cover]
+    hidden = false
+    hiddenInList = false
+    hiddenInSingle = false
+
+[editPost]
+    disabled = true
+
+[fuseOpts]
+    isCaseSensitive = false
+    shouldSort = true
+    location = 0
+    distance = 1000
+    threshold = 0.4
+    minMatchCharLength = 0
+    keys = ["title", "permalink", "summary", "content"]

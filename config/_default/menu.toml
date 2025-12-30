@@ -1,37 +1,35 @@
 [[main]]
-    identifier = "home"
-    name = "Home"
-    url = "/"
+    identifier = "posts"
+    name = "Posts"
+    url = "/posts/"
     weight = 1
-    [main.params]
-        icon = "home"
 
 [[main]]
     identifier = "archives"
     name = "Archives"
     url = "/archives/"
     weight = 2
-    [main.params]
-        icon = "archives"
+
+[[main]]
+    identifier = "tags"
+    name = "Tags"
+    url = "/tags/"
+    weight = 3
+
+[[main]]
+    identifier = "categories"
+    name = "Categories"
+    url = "/categories/"
+    weight = 4
 
 [[main]]
     identifier = "search"
     name = "Search"
     url = "/search/"
-    weight = 3
-    [main.params]
-        icon = "search"
+    weight = 5
 
-[[social]]
-    identifier = "github"
-    name = "GitHub"
-    url = "https://github.com/herms14"
-    [social.params]
-        icon = "brand-github"
-
-[[social]]
-    identifier = "linkedin"
-    name = "LinkedIn"
-    url = "https://linkedin.com/in/hermesmiraflor"
-    [social.params]
-        icon = "brand-linkedin"
+[[main]]
+    identifier = "about"
+    name = "About"
+    url = "/about/"
+    weight = 6
