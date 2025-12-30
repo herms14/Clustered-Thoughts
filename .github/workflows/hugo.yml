@@ -41,6 +41,14 @@ jobs:
         id: pages
         uses: actions/configure-pages@v5
 
+      - name: Debug - Check theme
+        run: |
+          echo "=== Checking theme directory ==="
+          ls -la themes/
+          ls -la themes/hugo-theme-stack/ | head -20
+          echo "=== Checking config ==="
+          cat config/_default/config.toml | head -10
+
       - name: Build with Hugo
         env:
           HUGO_CACHEDIR: ${{ runner.temp }}/hugo_cache
@@ -51,6 +59,8 @@ jobs:
             --gc \
             --minify \
             --baseURL "${{ steps.pages.outputs.base_url }}/"
+          echo "=== Build output sample ==="
+          head -50 public/index.html
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
