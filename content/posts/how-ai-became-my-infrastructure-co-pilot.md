@@ -12,10 +12,9 @@ tags:
     - automation
     - devops
 cover:
-    image: /images/ai-brain.jpg
+    image: /Clustered-Thoughts/images/ai-brain.jpg
     alt: "AI neural network visualization"
     caption: "AI as a tireless infrastructure partner"
-    relative: false
 ---
 
 It all started with frustration.
@@ -28,7 +27,7 @@ The first time it debugged a Prometheus query that had been frustrating me for h
 
 That moment changed how I approached every homelab project that followed.
 
-![Code and AI working together](/images/code-screen.jpg)
+![Code and AI working together](/Clustered-Thoughts/images/code-screen.jpg)
 
 ---
 
@@ -318,7 +317,7 @@ This workflow transforms a solo homelab project into pair programming with an in
 
 ## The Multiplier Effect
 
-![Dashboard showing infrastructure achievements](/images/dashboard.jpg)
+![Dashboard showing infrastructure achievements](/Clustered-Thoughts/images/dashboard.jpg)
 
 Here is a concrete accounting of what I have built with AI assistance over the past month:
 
