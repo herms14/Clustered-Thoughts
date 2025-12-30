@@ -10,9 +10,16 @@ tags:
     - synology
     - proxmox
     - networking
+cover:
+    image: /images/homelab-cover.jpg
+    alt: "Server rack with glowing lights"
+    caption: "What started as photo storage became this"
+    relative: false
 ---
 
 It all started from a trip to Japan back in 2023. I took a ridiculous amount of videos and photos, tiny slices of memory I wanted to keep forever while exploring that wonderful country. When I got home and started sorting through everything, it hit me just how important these moments were. Naturally, I uploaded them to Google Photos like I always did, until I got that familiar notification that I was out of space and needed to pay for more. That made me pause. If I kept paying every month just to store my own memories, I would eventually spend enough to buy a NAS anyway, and I would also gain something the cloud could never give me: real privacy and full control over my data.
+
+![A trip to Japan started it all](/images/japan-trip.jpg)
 
 Around that same time, Microsoft announced layoffs. I was not scared of losing my job because I trusted my skills, but I was scared of losing access to the technologies I worked with every day. All the tools, platforms, and cloud environments I relied on could disappear overnight if I no longer worked there. I realized how much I had taken that access for granted. I wanted a way to continue learning and experimenting regardless of which cloud provider I worked for in the future.
 
@@ -22,10 +29,13 @@ So the motivation behind building my homelab suddenly doubled. It was no longer 
 
 By December of 2023, I was already deep into researching what kind of NAS to get. I wanted something reliable and closer to enterprise grade rather than a flimsy consumer box. Expansion mattered because I did not want to outgrow my storage after a year. After comparing specs and reading countless Reddit threads, I eventually settled on Synology's DS923+. The "plus" line offered the compute power and flexibility I wanted, with a platform built for long term use. That decision opened the door to everything that followed.
 
+![Storage drives - the foundation of any homelab](/images/hard-drives.jpg)
+
 ## The Raspberry Pi Awakening
 
 Once the NAS was running smoothly, I began wondering what else I could improve at home. That was when I remembered an unused Raspberry Pi tucked in a drawer, a hand me down from an officemate that I had never found a use for. Suddenly, I had one. I set up Pi-hole with Unbound to clean up DNS traffic and speed up my browsing. It was meant to be a tiny upgrade, but once everything worked seamlessly, something in my brain flipped.
 
+![The humble beginnings of infrastructure tinkering](/images/circuit-board.jpg)
 
 ## The Self-Hosted Media Stack
 
@@ -54,6 +64,8 @@ My search narrowed to two ecosystems, Ubiquiti UniFi and TP-Link Omada.
 Ubiquiti had the reputation, the UI, and the community, but not the availability. In the Philippines, UniFi gear is rare and often overpriced, and Amazon shipping costs more than the devices themselves. Omada, on the other hand, offered nearly everything I needed, was readily available, and was far more cost effective.
 
 So Omada became the backbone of my network.
+
+![Enterprise networking at home](/images/network-cables.jpg)
 
 ## Building the Infrastructure
 
@@ -84,6 +96,8 @@ Then came security. If I planned to expose services externally, I needed a real 
 While this was happening, my cables multiplied like vines. Initially, I used a 3D printed 10 inch rack from Printables.com. It worked fine at first, but once the hardware became more expensive, the setup deserved something sturdier and cleaner. I upgraded to a DeskPi T2 rack, which offered proper mounting, cable routing, and airflow.
 
 **Version 2 of the homelab was born**: tidy, functional, and intentional.
+
+![The evolution from chaos to clean infrastructure](/images/server-rack.jpg)
 
 Now I am looking at my old gaming PC, wondering what role it should play next. Plex transcoder, backup NAS, another Kubernetes node, or something entirely different. The possibilities seem endless.
 

@@ -11,6 +11,11 @@ tags:
     - claude
     - automation
     - devops
+cover:
+    image: /images/ai-brain.jpg
+    alt: "AI neural network visualization"
+    caption: "AI as a tireless infrastructure partner"
+    relative: false
 ---
 
 It all started with frustration.
@@ -22,6 +27,8 @@ But something shifted when I discovered Claude Code - an AI that could actually 
 The first time it debugged a Prometheus query that had been frustrating me for hours, I realized this was not just a fancy autocomplete. It was a genuine collaborator. One that never got tired, never judged my mistakes, and never forgot a syntax pattern once it had seen my codebase.
 
 That moment changed how I approached every homelab project that followed.
+
+![Code and AI working together](/images/code-screen.jpg)
 
 ---
 
@@ -310,6 +317,8 @@ This workflow transforms a solo homelab project into pair programming with an in
 ---
 
 ## The Multiplier Effect
+
+![Dashboard showing infrastructure achievements](/images/dashboard.jpg)
 
 Here is a concrete accounting of what I have built with AI assistance over the past month:
 
