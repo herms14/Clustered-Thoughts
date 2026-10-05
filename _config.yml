@@ -1,74 +1,54 @@
-# Site settings for Clustered Thoughts (TeXt theme)
-# https://kitian616.github.io/jekyll-TeXt-theme/docs/en/configuration
+# Site settings for Clustered Thoughts (Minimal Mistakes theme)
+# https://mmistakes.github.io/minimal-mistakes/docs/configuration/
 
-theme: jekyll-text-theme
+theme: minimal-mistakes-jekyll
+minimal_mistakes_skin: "dark"
 
-## => Site Settings
-text_skin: dark
-highlight_theme: tomorrow-night-blue
-url: "https://herms14.github.io"
-baseurl: "/Clustered-Thoughts"
-title: Clustered Thoughts
+locale: "en-US"
+title: "Clustered Thoughts"
+subtitle: "Notes on infrastructure, automation, and supervised AI"
+name: "Hermes Miraflor II"
 description: >-
   Notes on infrastructure, automation, and supervised AI. A homelab journal on Proxmox, self-hosting,
   and putting AI agents to work on real infrastructure with a human in the loop.
-
-## => Language and Timezone
-lang: en
+url: "https://herms14.github.io"
+baseurl: "/Clustered-Thoughts"
+repository: "herms14/Clustered-Thoughts"
 timezone: Asia/Manila
 
-## => Author and Social
+teaser: /assets/img/posts/homelab-cover.jpg
+og_image: /assets/img/posts/homelab-cover.jpg
+words_per_minute: 200
+breadcrumbs: false
+search: true
+search_full_content: true
+search_provider: lunr
+
 author:
-  type: person
-  name: Hermes Miraflor II
-  avatar: https://github.com/herms14.png
-  bio: Homelabber in the Philippines. Writing about Proxmox, self-hosting, and AI agents that run real infrastructure with a human approving every change.
-  linkedin: hrmsmrflr
-  github: herms14
+  name: "Hermes Miraflor II"
+  avatar: "https://github.com/herms14.png"
+  bio: "Homelabber in the Philippines. Writing about Proxmox, self-hosting, and AI agents that run real infrastructure with a human approving every change."
+  location: "Philippines"
+  links:
+    - label: "GitHub"
+      icon: "fab fa-fw fa-github"
+      url: "https://github.com/herms14"
+    - label: "LinkedIn"
+      icon: "fab fa-fw fa-linkedin"
+      url: "https://www.linkedin.com/in/hrmsmrflr/"
 
-## => GitHub Repository
-repository: herms14/Clustered-Thoughts
-repository_tree: main
+footer:
+  links:
+    - label: "GitHub"
+      icon: "fab fa-fw fa-github"
+      url: "https://github.com/herms14"
+    - label: "LinkedIn"
+      icon: "fab fa-fw fa-linkedin"
+      url: "https://www.linkedin.com/in/hrmsmrflr/"
 
-## => Paths
-paths:
-  root: /
-  home: /
-  archive: /archive.html
-  rss: /feed.xml
-
-## => Post
-excerpt_separator: <!--more-->
-license: false
-toc:
-  selectors: "h2,h3"
-
-## => Paginate
-paginate: 8
-paginate_path: /page:num
-
-## => Sources
-sources: unpkg
-
-## => Sharing / comments / pageview / analytics
-sharing:
-  provider: false
-comments:
-  provider: false
-pageview:
-  provider: false
-analytics:
-  provider: false
-
-## => Search
-search:
-  provider: default
-
-## => Build
-markdown: kramdown
-highlighter: rouge
-permalink: /posts/:title/
-
+# Reading
+include:
+  - _pages
 exclude:
   - "*.gem"
   - "*.gemspec"
@@ -81,22 +61,64 @@ exclude:
   - Gemfile.lock
   - vendor
 
+markdown: kramdown
+highlighter: rouge
+kramdown:
+  input: GFM
+  hard_wrap: false
+  auto_ids: true
+  footnote_nr: 1
+  entity_output: as_char
+  toc_levels: 1..6
+  smart_quotes: lsquo,rsquo,ldquo,rdquo
+  enable_coderay: false
+
+sass:
+  sass_dir: _sass
+  style: compressed
+
+# Outputting
+permalink: /posts/:title/
+paginate: 6
+paginate_path: /page:num/
+date_format: "%B %-d, %Y"
+
+plugins:
+  - jekyll-paginate
+  - jekyll-sitemap
+  - jekyll-gist
+  - jekyll-feed
+  - jekyll-include-cache
+
+category_archive:
+  type: liquid
+  path: /categories/
+tag_archive:
+  type: liquid
+  path: /tags/
+
+compress_html:
+  clippings: all
+  ignore:
+    envs: development
+
 defaults:
   - scope:
       path: ""
       type: posts
     values:
-      layout: article
-      sharing: false
-      license: false
-      aside:
-        toc: true
-      show_edit_on_github: false
-      show_subscribe: true
-      pageview: false
-
-## => Plugins
-plugins:
-  - jekyll-feed
-  - jekyll-paginate
-  - jekyll-sitemap
+      layout: single
+      author_profile: true
+      read_time: true
+      show_date: true
+      share: true
+      related: true
+      toc: true
+      toc_sticky: true
+      toc_label: "On this page"
+  - scope:
+      path: "_pages"
+      type: pages
+    values:
+      layout: single
+      author_profile: true
