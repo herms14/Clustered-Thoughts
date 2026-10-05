@@ -11,11 +11,13 @@ tags:
 - devops
 description: How Claude Code sped up my homelab work, with real debugging sessions, the CLAUDE.md setup, and the limits I've learned to respect
 excerpt: How Claude Code sped up my homelab work, with real debugging sessions, the CLAUDE.md setup, and the limits I've learned to respect
-header:
-  overlay_image: /assets/img/posts/ai-brain.jpg
-  overlay_filter: 0.6
-  teaser: /assets/img/posts/ai-brain.jpg
-  image_description: AI neural network visualization
+cover: /assets/img/posts/ai-brain.jpg
+article_header:
+  type: overlay
+  theme: dark
+  background_color: '#123'
+  background_image:
+    gradient: linear-gradient(135deg, rgba(0, 0, 0, .7), rgba(0, 0, 0, .45))
 render_with_liquid: false
 ---
 
@@ -67,11 +69,8 @@ When I deploy something new, Claude updates all three: `docs/SERVICES.md`, the w
 
 Claude doesn't remember anything between sessions. Each new conversation starts from scratch, and so does every session that runs out of context.
 
-<div class="notice--info" markdown="1">
-
 If you take one thing from this post, it's this: the AI only knows what you've written down for it.
-
-</div>
+{:.info}
 
 So I keep a `CLAUDE.md` at the root of my repo. It's basically an operating manual for any AI working on my infrastructure. It has my IPs and network layout, where each service runs, where each kind of doc goes, naming conventions, and commit message format.
 
@@ -212,11 +211,8 @@ Could I have done this without AI? Probably, over six months or so instead of th
 
 **Secrets in generated files.** AI will put credentials inline if it thinks that's helpful. I review every generated file before committing, use environment variables, and keep a strict `.gitignore`.
 
-<div class="notice--danger" markdown="1">
-
 Never commit an AI-generated file without checking it for hardcoded secrets first.
-
-</div>
+{:.error}
 
 ## If You Want to Try This
 

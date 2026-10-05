@@ -1,7 +1,13 @@
 ---
-title: "About"
-permalink: /about/
+layout: article
+title: About
+permalink: /about.html
+key: page-about
+aside:
+  toc: false
+show_date: false
 ---
+
 
 
 ## Hey, I'm Hermes
@@ -37,6 +43,5 @@ The common thread is *supervised autonomy*. Let AI do the work, and keep a human
 - **GitHub**: [herms14](https://github.com/herms14)
 - **LinkedIn**: [hrmsmrflr](https://www.linkedin.com/in/hrmsmrflr/)
 
-<div class="notice--info" markdown="1">
 Views are my own. Everything here runs at home, on my own hardware.
-</div>
+{:.info}

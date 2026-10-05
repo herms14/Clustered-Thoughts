@@ -192,11 +192,8 @@ A few notes on it.
 
 `--dangerously-bypass-approvals-and-sandbox` is as scary as it sounds. The agent needs real root access over SSH to patch real machines, so I can't sandbox it. The safety has to come from everything around the call: my approval, the time window, the backup check, and the independent check afterwards.
 
-<div class="notice--warning" markdown="1">
-
 That flag means you've put the guardrails somewhere else. It doesn't mean you can skip them.
-
-</div>
+{:.warning}
 
 I also don't take Codex's word for it. When it's done, the Python code checks for itself that the host is reachable, the number of pending updates went down, no new services are failing, and the kernel is what it should be after a reboot. If Codex says it worked and the checks disagree, the ticket gets marked as failed.
 
@@ -214,13 +211,8 @@ wait → check: running? not unhealthy? not restart-looping?
 
 I tested the rollback by forcing a health check to fail. It rolled itself back, marked the ticket failed, and the triage agent correctly worked out that "this was a simulated failure for testing; the service is currently healthy on Python 3.11.17."
 
-<div class="notice--success" markdown="1">
-
-**Check the automation you already have**
-
-While building this I found that the Watchtower container I'd set up for automatic updates hadn't done anything in months. It was in monitor-only mode and sending notifications to a server I'd shut down long ago.
-
-</div>
+**Check the automation you already have.** While building this I found that the Watchtower container I'd set up for automatic updates hadn't done anything in months. It was in monitor-only mode and sending notifications to a server I'd shut down long ago.
+{:.success}
 
 ### Getting Real Version Numbers
 

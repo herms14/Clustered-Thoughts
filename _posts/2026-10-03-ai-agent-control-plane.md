@@ -70,11 +70,8 @@ healthcheck:
     "import urllib.request,sys; sys.exit(0 if urllib.request.urlopen('http://localhost:8000/health').status==200 else 1)"]
 ```
 
-<div class="notice--success" markdown="1">
-
 If `docker ps` and the container logs disagree, believe the logs. A healthcheck is just another command, and it can be wrong too.
-
-</div>
+{:.success}
 
 The thing I took from this: a tool nobody is watching slowly rots, whether it's healthy or not. If Helios is going to be what the agents talk to, it needs to live somewhere I'll notice when it stops responding.
 
@@ -114,13 +111,8 @@ The quoting got mangled somewhere along the way. The `>` redirect ran on the Pro
 
 I figured that was annoying but limited to one node. It wasn't. On Proxmox, `/root/.ssh/authorized_keys` on every node is a symlink to `/etc/pve/priv/authorized_keys`, which is one file shared across the whole cluster. So I hadn't broken root SSH on one node. I'd broken it on all three at the same time.
 
-<div class="notice--info" markdown="1">
-
-**It wasn't as bad as it looked**
-
-The cluster itself was fine the whole time. `pvecm status` showed full quorum, and none of the VMs or LXCs noticed anything. I'd lost my usual way in, but nothing was actually down. It helps to check that before panicking.
-
-</div>
+**It wasn't as bad as it looked.** The cluster itself was fine the whole time. `pvecm status` showed full quorum, and none of the VMs or LXCs noticed anything. I'd lost my usual way in, but nothing was actually down. It helps to check that before panicking.
+{:.info}
 
 The way back in was the Proxmox web console, since that doesn't need SSH. That had its own problems. Pasting into the console kept mangling multi-line commands. I got stray characters, quote prompts that wouldn't close, and one `echo` that quietly wrote an empty file. What finally worked was opening `nano` and pasting the key straight into the editor, so the shell never had a chance to mess with the quoting.
 

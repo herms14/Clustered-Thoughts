@@ -12,11 +12,13 @@ tags:
 - virtualization
 description: Comparing Proxmox VE, VMware ESXi, and Hyper-V for homelab use, and why Proxmox ended up being my pick
 excerpt: Comparing Proxmox VE, VMware ESXi, and Hyper-V for homelab use, and why Proxmox ended up being my pick
-header:
-  overlay_image: /assets/img/posts/server-rack.jpg
-  overlay_filter: 0.6
-  teaser: /assets/img/posts/server-rack.jpg
-  image_description: Server infrastructure
+cover: /assets/img/posts/server-rack.jpg
+article_header:
+  type: overlay
+  theme: dark
+  background_color: '#123'
+  background_image:
+    gradient: linear-gradient(135deg, rgba(0, 0, 0, .7), rgba(0, 0, 0, .45))
 render_with_liquid: false
 ---
 

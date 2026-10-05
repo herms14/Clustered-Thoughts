@@ -10,11 +10,13 @@ tags:
 - synology
 description: How a trip to Japan and the fear of losing cloud access led me to build a full homelab
 excerpt: How a trip to Japan and the fear of losing cloud access led me to build a full homelab
-header:
-  overlay_image: /assets/img/posts/homelab-cover.jpg
-  overlay_filter: 0.6
-  teaser: /assets/img/posts/homelab-cover.jpg
-  image_description: Server rack with glowing lights
+cover: /assets/img/posts/homelab-cover.jpg
+article_header:
+  type: overlay
+  theme: dark
+  background_color: '#123'
+  background_image:
+    gradient: linear-gradient(135deg, rgba(0, 0, 0, .7), rgba(0, 0, 0, .45))
 render_with_liquid: false
 ---
 
@@ -82,11 +84,8 @@ AI helped a lot here too. Even with my background, having ChatGPT and Claude Cod
 
 I ran the Omada controller as software on my NAS. Every time the NAS went down, even for a quick reboot, I lost management of my whole network.
 
-<div class="notice--warning" markdown="1">
-
 Don't run your management plane on the same systems you're experimenting on. The funny part is that I used to warn enterprise customers about exactly this.
-
-</div>
+{:.warning}
 
 I moved the controller onto its own hardware and the problem went away.
 

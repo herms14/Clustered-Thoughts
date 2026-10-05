@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Publish blog posts from the Obsidian vault to the Clustered Thoughts Jekyll (Minimal Mistakes) site.
+"""Publish blog posts from the Obsidian vault to the Clustered Thoughts Jekyll (TeXt theme) site.
 
 A vault post is published only when its front matter has `publish: true`.
 Set `slug:` to control the URL (/posts/<slug>/). Future-dated posts are committed but only appear once their
@@ -25,7 +25,7 @@ POSTS = REPO / "_posts"
 VAULT = Path(r"C:\Users\herms\OneDrive\Obsidian Vault\Hermes's Life Knowledge Base\07 HomeLab Things\Homelab Blog Posts")
 BASEURL = "/Clustered-Thoughts"
 CALLOUTS = {"note": "info", "info": "info", "abstract": "info", "tip": "success", "success": "success",
-            "warning": "warning", "caution": "warning", "danger": "danger", "bug": "danger", "error": "danger"}
+            "warning": "warning", "caution": "warning", "danger": "error", "bug": "error", "error": "error"}
 
 FM_RE = re.compile(r"\A---\s*\n(.*?)\n---\s*\n(.*)\Z", re.S)
 
@@ -51,7 +51,7 @@ def as_list(v):
 
 
 def convert_callouts(body):
-    """Obsidian `> [!NOTE] Title` blocks -> Minimal Mistakes notices (`<div class="notice--info">`)."""
+    """Obsidian `> [!NOTE] Title` blocks -> TeXt alerts (one paragraph followed by `{:.info}`)."""
     lines, out, i = body.split("\n"), [], 0
     while i < len(lines):
         m = re.match(r"^>\s*\[!(\w+)\][+-]?\s*(.*)$", lines[i])
@@ -60,12 +60,15 @@ def convert_callouts(body):
             i += 1
             continue
         kind = CALLOUTS.get(m.group(1).lower(), "info")
-        block = [f"**{m.group(2).strip()}**", ""] if m.group(2).strip() else []
+        title = m.group(2).strip().rstrip(".")
+        text = [f"**{title}.**"] if title else []
         i += 1
         while i < len(lines) and lines[i].startswith(">"):
-            block.append(re.sub(r"^>\s?", "", lines[i]))
+            line = re.sub(r"^>\s?", "", lines[i]).strip()
+            if line:
+                text.append(line)
             i += 1
-        out += [f'<div class="notice--{kind}" markdown="1">', ""] + block + ["", "</div>"]
+        out += [" ".join(text), f"{{:.{kind}}}"]
     return "\n".join(out)
 
 
@@ -91,7 +94,7 @@ def transform(text, source_name=""):
     body = re.sub(r"\[\[([^\]|]+)\|([^\]]+)\]\]", r"\2", body)
     body = re.sub(r"\[\[([^\]]+)\]\]", r"\1", body)
     body = re.sub(r"\]\(/Clustered-Thoughts/images/", "](/assets/img/posts/", body)
-    # Minimal Mistakes doesn't prefix baseurl in post bodies, so make internal links absolute
+    # Jekyll doesn't prefix baseurl in post bodies, so make internal links absolute
     body = re.sub(r"\]\(/assets/", f"]({BASEURL}/assets/", body)
     body = re.sub(r"\]\(\.\./([a-z0-9-]+)/(#[\w-]+)?\)", rf"]({BASEURL}/posts/\1/\2)", body)
     body = convert_callouts(body)
@@ -100,7 +103,9 @@ def transform(text, source_name=""):
     if desc:
         out["description"] = out["excerpt"] = " ".join(str(desc).split())
     if image:
-        out["header"] = {"overlay_image": image, "overlay_filter": 0.6, "teaser": image, "image_description": alt}
+        out["cover"] = image
+        out["article_header"] = {"type": "overlay", "theme": "dark", "background_color": "#123",
+                                 "background_image": {"gradient": "linear-gradient(135deg, rgba(0, 0, 0, .7), rgba(0, 0, 0, .45))"}}
     out["render_with_liquid"] = False  # code samples contain {{ }} (docker/go templates)
     front = yaml.safe_dump(out, sort_keys=False, allow_unicode=True, width=1000)
     return f"{date:%Y-%m-%d}-{slug}.md", f"---\n{front}---\n\n{body.lstrip()}"
