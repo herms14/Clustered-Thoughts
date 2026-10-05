@@ -6,4 +6,14 @@ search: false
 @charset "utf-8";
 
 @import "minimal-mistakes/skins/{{ site.minimal_mistakes_skin | default: 'default' }}";
+// Full-width layout: let masthead, main and footer span the whole viewport
+$max-width: 100%;
+
 @import "minimal-mistakes";
+
+#main,
+.masthead__inner-wrap,
+.page__footer footer {
+  padding-left: 2em;
+  padding-right: 2em;
+}

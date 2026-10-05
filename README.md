@@ -29,7 +29,7 @@ python scripts\sync_obsidian.py --push      # convert, commit, push → live in 
 | `_posts/` | Published posts (`YYYY-MM-DD-slug.md` → `/posts/slug/`) |
 | `_pages/` | About, archives (year, category, tag) and 404 pages |
 | `_data/navigation.yml` | Top navigation links |
-| `assets/css/main.scss` | Skin import |
+| `assets/css/main.scss` | Skin import plus full-width layout (`$max-width: 100%`) |
 | `_config.yml` | Site settings (title, tagline, base URL, social links) |
 | `_data/` | Sidebar contact links, share buttons |
 | `assets/img/posts/` | Post images |
