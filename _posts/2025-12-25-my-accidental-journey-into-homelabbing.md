@@ -9,9 +9,12 @@ tags:
 - proxmox
 - synology
 description: How a trip to Japan and the fear of losing cloud access led me to build a full homelab
-image:
-  path: /assets/img/posts/homelab-cover.jpg
-  alt: Server rack with glowing lights
+excerpt: How a trip to Japan and the fear of losing cloud access led me to build a full homelab
+header:
+  overlay_image: /assets/img/posts/homelab-cover.jpg
+  overlay_filter: 0.6
+  teaser: /assets/img/posts/homelab-cover.jpg
+  image_description: Server rack with glowing lights
 render_with_liquid: false
 ---
 
@@ -21,7 +24,7 @@ It started with a trip to Japan in 2023. I took a ridiculous number of photos an
 
 That made me stop and think. If I kept paying every month to store my own memories, I'd eventually spend enough to buy a NAS anyway. And with a NAS, the photos would actually be mine, on hardware I control.
 
-![A trip to Japan started it all](/assets/img/posts/japan-trip.jpg)
+![A trip to Japan started it all](/Clustered-Thoughts/assets/img/posts/japan-trip.jpg)
 
 Around the same time, Microsoft announced layoffs. I wasn't really worried about my job. What bothered me was how much I depended on access to the tools and cloud environments I used at work. If I left, all of that would be gone overnight. I wanted somewhere to keep learning that didn't depend on who I worked for.
 
@@ -33,7 +36,7 @@ By December 2023 I was deep in NAS research. I wanted something closer to enterp
 
 After a lot of spec sheets and more Reddit threads than I'd like to admit, I bought a **Synology DS923+**. The Plus line had the compute and flexibility I wanted, and I trusted it to last. Pretty much everything else in this post traces back to that purchase.
 
-![Storage drives - the foundation of any homelab](/assets/img/posts/hard-drives.jpg)
+![Storage drives - the foundation of any homelab](/Clustered-Thoughts/assets/img/posts/hard-drives.jpg)
 
 ## The Raspberry Pi in the Drawer
 
@@ -41,7 +44,7 @@ Once the NAS was running, I started looking around for other things to improve. 
 
 I put **Pi-hole and Unbound** on it to clean up DNS and speed up browsing a bit. It was supposed to be a tiny weekend project. It worked so well that I immediately wanted to do more.
 
-![The humble beginnings of infrastructure tinkering](/assets/img/posts/circuit-board.jpg)
+![The humble beginnings of infrastructure tinkering](/Clustered-Thoughts/assets/img/posts/circuit-board.jpg)
 
 ## Self-Hosting My Media
 
@@ -65,22 +68,25 @@ What I wanted was:
 
 It came down to **Ubiquiti UniFi** or **TP-Link Omada**. UniFi has the better reputation and UI, but it's hard to find in the Philippines, it's usually overpriced when you do, and shipping from Amazon can cost more than the gear. Omada did almost everything I needed, I could buy it locally, and it cost a lot less. So I went with Omada.
 
-![Enterprise networking at home](/assets/img/posts/network-cables.jpg)
+![Enterprise networking at home](/Clustered-Thoughts/assets/img/posts/network-cables.jpg)
 
 ## Building It Out
 
 The base setup was an **ER605 gateway**, an **8-port managed switch**, and an **enterprise access point**. I also asked a colleague in the US to bring back a budget mini PC for me, so the NAS could stick to storage and the mini PC could run everything else.
 
-For a while it was great. I set up VLANs and ACLs properly, and that's also when containers finally clicked for me, first Docker and then Docker Compose. The mini PC ended up running **Proxmox**, which turned out to be a really capable open-source hypervisor. I wrote about why I picked it over ESXi and Hyper-V in [Choosing Your Hypervisor](../choosing-your-hypervisor-why-proxmox-won/).
+For a while it was great. I set up VLANs and ACLs properly, and that's also when containers finally clicked for me, first Docker and then Docker Compose. The mini PC ended up running **Proxmox**, which turned out to be a really capable open-source hypervisor. I wrote about why I picked it over ESXi and Hyper-V in [Choosing Your Hypervisor](/Clustered-Thoughts/posts/choosing-your-hypervisor-why-proxmox-won/).
 
-AI helped a lot here too. Even with my background, having ChatGPT and Claude Code to bounce ideas off made experimenting much faster. I go into that in [How AI Became My Infrastructure Co-Pilot](../how-ai-became-my-infrastructure-co-pilot/).
+AI helped a lot here too. Even with my background, having ChatGPT and Claude Code to bounce ideas off made experimenting much faster. I go into that in [How AI Became My Infrastructure Co-Pilot](/Clustered-Thoughts/posts/how-ai-became-my-infrastructure-co-pilot/).
 
 ## The Mistake I Should Have Seen Coming
 
 I ran the Omada controller as software on my NAS. Every time the NAS went down, even for a quick reboot, I lost management of my whole network.
 
-> Don't run your management plane on the same systems you're experimenting on. The funny part is that I used to warn enterprise customers about exactly this.
-{: .prompt-warning }
+<div class="notice--warning" markdown="1">
+
+Don't run your management plane on the same systems you're experimenting on. The funny part is that I used to warn enterprise customers about exactly this.
+
+</div>
 
 I moved the controller onto its own hardware and the problem went away.
 
@@ -96,7 +102,7 @@ Meanwhile the cables were getting out of hand. I'd started with a 3D-printed 10-
 
 That's what I think of as version 2 of the homelab. It's tidy, and everything in it is there on purpose.
 
-![The evolution from chaos to clean infrastructure](/assets/img/posts/server-rack.jpg)
+![The evolution from chaos to clean infrastructure](/Clustered-Thoughts/assets/img/posts/server-rack.jpg)
 
 I'm now eyeing my old gaming PC and trying to decide what it becomes. Maybe a Plex transcoder, a backup NAS, or another Kubernetes node. I haven't decided.
 

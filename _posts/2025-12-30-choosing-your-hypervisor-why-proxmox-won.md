@@ -11,9 +11,12 @@ tags:
 - proxmox
 - virtualization
 description: Comparing Proxmox VE, VMware ESXi, and Hyper-V for homelab use, and why Proxmox ended up being my pick
-image:
-  path: /assets/img/posts/server-rack.jpg
-  alt: Server infrastructure
+excerpt: Comparing Proxmox VE, VMware ESXi, and Hyper-V for homelab use, and why Proxmox ended up being my pick
+header:
+  overlay_image: /assets/img/posts/server-rack.jpg
+  overlay_filter: 0.6
+  teaser: /assets/img/posts/server-rack.jpg
+  image_description: Server infrastructure
 render_with_liquid: false
 ---
 
@@ -90,7 +93,7 @@ Once the nodes join, you get live migration, shared storage, and high availabili
 
 The Proxmox web UI isn't pretty, but it does the job. Console access (noVNC and xterm.js), storage, backups, the firewall, and a view of the whole cluster are all there. I rarely need anything else for day-to-day work.
 
-![Infrastructure that scales with your needs](/assets/img/posts/network-cables.jpg)
+![Infrastructure that scales with your needs](/Clustered-Thoughts/assets/img/posts/network-cables.jpg)
 
 ### Everything Has an API
 
@@ -150,7 +153,7 @@ Within a minute it's up, has an IP, and I can SSH in.
 
 ## Things I Wish I'd Known Earlier
 
-**Keep management away from your experiments.** Critical things like network controllers shouldn't sit on hardware you're constantly rebooting. I learned this one personally: I ran the Omada controller on my NAS, and every time I rebooted the NAS for an experiment, I lost visibility of my whole network. I wrote more about that in [my origin story](../my-accidental-journey-into-homelabbing/).
+**Keep management away from your experiments.** Critical things like network controllers shouldn't sit on hardware you're constantly rebooting. I learned this one personally: I ran the Omada controller on my NAS, and every time I rebooted the NAS for an experiment, I lost visibility of my whole network. I wrote more about that in [my origin story](/Clustered-Thoughts/posts/my-accidental-journey-into-homelabbing/).
 
 **Turn on IOMMU from day one.** If there's any chance you'll want GPU passthrough later, enable IOMMU in the BIOS and kernel parameters now. Adding it later is a pain.
 

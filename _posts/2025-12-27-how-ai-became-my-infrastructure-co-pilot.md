@@ -10,13 +10,16 @@ tags:
 - claude
 - devops
 description: How Claude Code sped up my homelab work, with real debugging sessions, the CLAUDE.md setup, and the limits I've learned to respect
-image:
-  path: /assets/img/posts/ai-brain.jpg
-  alt: AI neural network visualization
+excerpt: How Claude Code sped up my homelab work, with real debugging sessions, the CLAUDE.md setup, and the limits I've learned to respect
+header:
+  overlay_image: /assets/img/posts/ai-brain.jpg
+  overlay_filter: 0.6
+  teaser: /assets/img/posts/ai-brain.jpg
+  image_description: AI neural network visualization
 render_with_liquid: false
 ---
 
-> This post is about how I use Claude Code, an AI coding agent that runs in my terminal, to build and run my homelab. I cover what it's good at, a few real debugging sessions, the `CLAUDE.md` file that keeps it useful from one session to the next, and where it falls short. It follows on from my [origin story](../my-accidental-journey-into-homelabbing/), but you don't need to read that first.
+> This post is about how I use Claude Code, an AI coding agent that runs in my terminal, to build and run my homelab. I cover what it's good at, a few real debugging sessions, the `CLAUDE.md` file that keeps it useful from one session to the next, and where it falls short. It follows on from my [origin story](/Clustered-Thoughts/posts/my-accidental-journey-into-homelabbing/), but you don't need to read that first.
 
 When I started taking the homelab seriously in late 2024, I was already using ChatGPT now and then. I'd ask it things like whether to run one big Docker Compose stack or split services across hosts, or whether Cloudflare Tunnels made more sense than my own reverse proxy. Useful, but it was still me copying things back and forth.
 
@@ -24,7 +27,7 @@ Then I tried **Claude Code**, which can actually see my terminal, read my files,
 
 I've used it for almost every homelab project since. These are my notes on what that looks like day to day.
 
-![Code and AI working together](/assets/img/posts/code-screen.jpg)
+![Code and AI working together](/Clustered-Thoughts/assets/img/posts/code-screen.jpg)
 
 ## What It's Good At
 
@@ -64,8 +67,11 @@ When I deploy something new, Claude updates all three: `docs/SERVICES.md`, the w
 
 Claude doesn't remember anything between sessions. Each new conversation starts from scratch, and so does every session that runs out of context.
 
-> If you take one thing from this post, it's this: the AI only knows what you've written down for it.
-{: .prompt-info }
+<div class="notice--info" markdown="1">
+
+If you take one thing from this post, it's this: the AI only knows what you've written down for it.
+
+</div>
 
 So I keep a `CLAUDE.md` at the root of my repo. It's basically an operating manual for any AI working on my infrastructure. It has my IPs and network layout, where each service runs, where each kind of doc goes, naming conventions, and commit message format.
 
@@ -181,7 +187,7 @@ Steps 7 to 9 are the boring part, but they're why the next session goes smoothly
 
 ## What I Got Done in a Month
 
-![Dashboard showing infrastructure achievements](/assets/img/posts/dashboard.jpg)
+![Dashboard showing infrastructure achievements](/Clustered-Thoughts/assets/img/posts/dashboard.jpg)
 
 Here's roughly what I built with Claude's help in about a month:
 
@@ -206,8 +212,11 @@ Could I have done this without AI? Probably, over six months or so instead of th
 
 **Secrets in generated files.** AI will put credentials inline if it thinks that's helpful. I review every generated file before committing, use environment variables, and keep a strict `.gitignore`.
 
-> Never commit an AI-generated file without checking it for hardcoded secrets first.
-{: .prompt-danger }
+<div class="notice--danger" markdown="1">
+
+Never commit an AI-generated file without checking it for hardcoded secrets first.
+
+</div>
 
 ## If You Want to Try This
 
@@ -250,7 +259,7 @@ Using AI hasn't meant I need to understand my infrastructure less. It's actually
 
 If you're starting a homelab, I'd bring an AI assistant along, just not as a replacement for learning. Write things down early. The better your notes, the better it works.
 
-Next up is [choosing a hypervisor](../choosing-your-hypervisor-why-proxmox-won/), and why I went with Proxmox over ESXi and Hyper-V.
+Next up is [choosing a hypervisor](/Clustered-Thoughts/posts/choosing-your-hypervisor-why-proxmox-won/), and why I went with Proxmox over ESXi and Hyper-V.
 
 ## Resources
 

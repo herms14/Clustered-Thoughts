@@ -16,6 +16,7 @@ tags:
 - proxmox
 - sre
 description: Notes on the six small agents that now find, research, apply, check and document OS and Docker updates in my homelab, which parts are actually AI, and the guardrails that let me sleep while it patches at 2 AM.
+excerpt: Notes on the six small agents that now find, research, apply, check and document OS and Docker updates in my homelab, which parts are actually AI, and the guardrails that let me sleep while it patches at 2 AM.
 render_with_liquid: false
 ---
 
@@ -25,7 +26,7 @@ You probably know the feeling. You SSH into a VM you haven't touched in a month 
 
 Patching is one of the most important jobs in IT and also one of the most boring, and I kept putting it off. So I tried handing it to a set of AI-assisted agents and keeping only one job for myself: saying yes or no.
 
-This is the follow-up to my post on [giving AI agents a control plane for my homelab](../ai-agent-control-plane/), where I started working out how to let agents near my cluster safely. You don't need to read that one first.
+This is the follow-up to my post on [giving AI agents a control plane for my homelab](/Clustered-Thoughts/posts/ai-agent-control-plane/), where I started working out how to let agents near my cluster safely. You don't need to read that one first.
 
 ## The Short Version
 
@@ -191,8 +192,11 @@ A few notes on it.
 
 `--dangerously-bypass-approvals-and-sandbox` is as scary as it sounds. The agent needs real root access over SSH to patch real machines, so I can't sandbox it. The safety has to come from everything around the call: my approval, the time window, the backup check, and the independent check afterwards.
 
-> That flag means you've put the guardrails somewhere else. It doesn't mean you can skip them.
-{: .prompt-warning }
+<div class="notice--warning" markdown="1">
+
+That flag means you've put the guardrails somewhere else. It doesn't mean you can skip them.
+
+</div>
 
 I also don't take Codex's word for it. When it's done, the Python code checks for itself that the host is reachable, the number of pending updates went down, no new services are failing, and the kernel is what it should be after a reboot. If Codex says it worked and the checks disagree, the ticket gets marked as failed.
 
@@ -210,9 +214,13 @@ wait → check: running? not unhealthy? not restart-looping?
 
 I tested the rollback by forcing a health check to fail. It rolled itself back, marked the ticket failed, and the triage agent correctly worked out that "this was a simulated failure for testing; the service is currently healthy on Python 3.11.17."
 
-> **Check the automation you already have**
-> While building this I found that the Watchtower container I'd set up for automatic updates hadn't done anything in months. It was in monitor-only mode and sending notifications to a server I'd shut down long ago.
-{: .prompt-tip }
+<div class="notice--success" markdown="1">
+
+**Check the automation you already have**
+
+While building this I found that the Watchtower container I'd set up for automatic updates hadn't done anything in months. It was in monitor-only mode and sending notifications to a server I'd shut down long ago.
+
+</div>
 
 ### Getting Real Version Numbers
 

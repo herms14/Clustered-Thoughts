@@ -8,7 +8,7 @@ A homelab journal: Proxmox, self-hosting and automation, plus AI agents (OpenAI 
 
 ## Stack
 
-- [Jekyll](https://jekyllrb.com/) + [Chirpy theme](https://github.com/cotes2020/jekyll-theme-chirpy) (gem-based, `jekyll-theme-chirpy ~> 7.6`)
+- [Jekyll](https://jekyllrb.com/) + [Minimal Mistakes](https://github.com/mmistakes/minimal-mistakes) (gem-based, `minimal-mistakes-jekyll ~> 4.28`, `neon` skin)
 - GitHub Actions (`.github/workflows/pages-deploy.yml`) builds, link-checks (`htmlproofer`) and deploys to GitHub Pages
   - Push to `main` → build + deploy. Other branches → build + test only.
   - Daily 09:00 Asia/Manila scheduled build publishes future-dated posts once their date passes.
@@ -27,7 +27,9 @@ python scripts\sync_obsidian.py --push      # convert, commit, push → live in 
 | Path | Purpose |
 |---|---|
 | `_posts/` | Published posts (`YYYY-MM-DD-slug.md` → `/posts/slug/`) |
-| `_tabs/` | Sidebar pages (About, Archives, Categories, Tags) |
+| `_pages/` | About, archives (year, category, tag) and 404 pages |
+| `_data/navigation.yml` | Top navigation links |
+| `assets/css/main.scss` | Skin import plus small neon glow tweaks |
 | `_config.yml` | Site settings (title, tagline, base URL, social links) |
 | `_data/` | Sidebar contact links, share buttons |
 | `assets/img/posts/` | Post images |
