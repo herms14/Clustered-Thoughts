@@ -8,144 +8,122 @@ tags:
 - origins
 - proxmox
 - synology
-description: How a trip to Japan and the fear of losing cloud access led me to build a full homelab ecosystem
+description: How a trip to Japan and the fear of losing cloud access led me to build a full homelab
 image:
   path: /assets/img/posts/homelab-cover.jpg
   alt: Server rack with glowing lights
 render_with_liquid: false
 ---
 
-It all started from a trip to Japan back in 2023. I took a ridiculous amount of videos and photos, tiny slices of memory I wanted to keep forever while exploring that wonderful country. When I got home and started sorting through everything, it hit me just how important these moments were. Naturally, I uploaded them to Google Photos like I always did, until I got that familiar notification that I was out of space and needed to pay for more. That made me pause. If I kept paying every month just to store my own memories, I would eventually spend enough to buy a NAS anyway, and I would also gain something the cloud could never give me: real privacy and full control over my data.
+> This is the first post on Clustered Thoughts. It's mostly the backstory: how a phone full of Japan photos turned into a NAS, then a Raspberry Pi, then a Proxmox cluster with a VPN to Azure. The more technical posts come after this one.
+
+It started with a trip to Japan in 2023. I took a ridiculous number of photos and videos, the way everyone does there. When I got home I started uploading them to Google Photos like I always did, and then got the usual message: you're out of storage, please pay for more.
+
+That made me stop and think. If I kept paying every month to store my own memories, I'd eventually spend enough to buy a NAS anyway. And with a NAS, the photos would actually be mine, on hardware I control.
 
 ![A trip to Japan started it all](/assets/img/posts/japan-trip.jpg)
 
-Around that same time, Microsoft announced layoffs. I was not scared of losing my job because I trusted my skills, but I was scared of losing access to the technologies I worked with every day. All the tools, platforms, and cloud environments I relied on could disappear overnight if I no longer worked there. I realized how much I had taken that access for granted. I wanted a way to continue learning and experimenting regardless of which cloud provider I worked for in the future.
+Around the same time, Microsoft announced layoffs. I wasn't really worried about my job. What bothered me was how much I depended on access to the tools and cloud environments I used at work. If I left, all of that would be gone overnight. I wanted somewhere to keep learning that didn't depend on who I worked for.
 
-So the motivation behind building my homelab suddenly doubled. It was no longer only about storing memories. It became a way to preserve my technical playground, a space where I could learn, break things, rebuild them, and stay sharp without relying on any employer. With that mindset, everything escalated quickly.
+So now I had two reasons. One was storing photos. The other was having my own technical playground where I could build things, break them, and rebuild them. Everything after that happened one "small upgrade" at a time.
 
-## The NAS Decision
+## Picking a NAS
 
-By December of 2023, I was already deep into researching what kind of NAS to get. I wanted something reliable and closer to enterprise grade rather than a flimsy consumer box. Expansion mattered because I did not want to outgrow my storage after a year. After comparing specs and reading countless Reddit threads, I eventually settled on Synology's DS923+. The "plus" line offered the compute power and flexibility I wanted, with a platform built for long term use. That decision opened the door to everything that followed.
+By December 2023 I was deep in NAS research. I wanted something closer to enterprise gear than a cheap consumer box, with room to grow so I wouldn't outgrow it in a year, and enough CPU to run more than file shares.
+
+After a lot of spec sheets and more Reddit threads than I'd like to admit, I bought a **Synology DS923+**. The Plus line had the compute and flexibility I wanted, and I trusted it to last. Pretty much everything else in this post traces back to that purchase.
 
 ![Storage drives - the foundation of any homelab](/assets/img/posts/hard-drives.jpg)
 
-## The Raspberry Pi Awakening
+## The Raspberry Pi in the Drawer
 
-Once the NAS was running smoothly, I began wondering what else I could improve at home. That was when I remembered an unused Raspberry Pi tucked in a drawer, a hand me down from an officemate that I had never found a use for. Suddenly, I had one. I set up Pi-hole with Unbound to clean up DNS traffic and speed up my browsing. It was meant to be a tiny upgrade, but once everything worked seamlessly, something in my brain flipped.
+Once the NAS was running, I started looking around for other things to improve. I remembered I had a Raspberry Pi sitting in a drawer, a hand-me-down from an officemate that I'd never used.
+
+I put **Pi-hole and Unbound** on it to clean up DNS and speed up browsing a bit. It was supposed to be a tiny weekend project. It worked so well that I immediately wanted to do more.
 
 ![The humble beginnings of infrastructure tinkering](/assets/img/posts/circuit-board.jpg)
 
-## The Self-Hosted Media Stack
+## Self-Hosting My Media
 
-With 10 TB of storage available, the next idea came naturally: why not self host my media and stop paying for streaming subscriptions? I began exploring the ARR stack, Docker, media servers, and automation workflows. My mini PC quickly turned into a lab.
+With 10 TB of storage, the next idea was obvious. Why not host my own media and drop some streaming subscriptions? I started reading about the ARR stack, Docker, and media servers, and my mini PC slowly turned into a lab.
 
-The state of streaming made the decision even easier. Everything felt fragmented. Each app had its own subscription, prices kept increasing, shows vanished without warning, and exclusives were scattered everywhere. I wanted a single place to organize the media I already owned without relying on half a dozen apps. If I was going to spend money every month, I would rather invest in a system where I owned the experience, not rented it.
+Streaming made the decision easy, honestly. Every service wanted its own subscription, prices kept going up, and shows disappeared without warning. If I was going to pay every month anyway, I'd rather put that money into something I own.
 
-That was the moment the homelab truly began.
+That's when it stopped being "a NAS" and became a homelab.
 
-## Networking: The Foundation
+## Fixing the Network First
 
-As more ideas appeared, such as Kubernetes clusters, hybrid networking with Azure, segmentation for IoT, and proper traffic visibility, I realized none of it would work without a solid foundation. Before anything else, I needed to fix the basics: networking.
+The ideas kept coming: Kubernetes, hybrid networking with Azure, separating IoT devices, seeing where traffic was going. None of it was going to work on my network at the time, which was a TP-Link mesh router and a cheap USB Wi-Fi dongle on my PC. No VLANs, no real routing, no visibility.
 
-Up until then, my home network relied on a consumer grade TP-Link mesh router and a cheap USB Wi-Fi dongle on my PC. It worked, but not for the architecture I had in mind. There were no VLANs, no advanced routing capabilities, no visibility, and no security.
+What I wanted was:
 
-So I made a list of what I wanted:
+* IoT devices on their own segment
+* Visibility into traffic
+* A site-to-site VPN to Azure
+* Reliable remote access
+* One place to manage it all
 
-* Proper segmentation for IoT
-* Full visibility into traffic flows
-* Site to site VPN with Azure
-* Reliable remote access and management
-* Centralized SDN style control
-
-My search narrowed to two ecosystems, Ubiquiti UniFi and TP-Link Omada.
-
-Ubiquiti had the reputation, the UI, and the community, but not the availability. In the Philippines, UniFi gear is rare and often overpriced, and Amazon shipping costs more than the devices themselves. Omada, on the other hand, offered nearly everything I needed, was readily available, and was far more cost effective.
-
-So Omada became the backbone of my network.
+It came down to **Ubiquiti UniFi** or **TP-Link Omada**. UniFi has the better reputation and UI, but it's hard to find in the Philippines, it's usually overpriced when you do, and shipping from Amazon can cost more than the gear. Omada did almost everything I needed, I could buy it locally, and it cost a lot less. So I went with Omada.
 
 ![Enterprise networking at home](/assets/img/posts/network-cables.jpg)
 
-## Building the Infrastructure
+## Building It Out
 
-I built the foundation with an ER605 gateway, an 8 port managed switch, and an enterprise grade access point. To offload workloads properly, I asked a colleague in the US to bring home a budget mini PC so that my NAS could focus on storage.
+The base setup was an **ER605 gateway**, an **8-port managed switch**, and an **enterprise access point**. I also asked a colleague in the US to bring back a budget mini PC for me, so the NAS could stick to storage and the mini PC could run everything else.
 
-For a while, everything worked beautifully. I dove into VLANs and ACLs, and designed my network with real segmentation. That was also when containerization finally clicked. I started with Docker, then Docker Compose, and the mini PC became a flexible service host powered by Proxmox, a surprisingly capable open source hypervisor that tied everything together nicely.
+For a while it was great. I set up VLANs and ACLs properly, and that's also when containers finally clicked for me, first Docker and then Docker Compose. The mini PC ended up running **Proxmox**, which turned out to be a really capable open-source hypervisor. I wrote about why I picked it over ESXi and Hyper-V in [Choosing Your Hypervisor](../choosing-your-hypervisor-why-proxmox-won/).
 
-AI accelerated the journey as well. Even as a senior engineer, having ChatGPT and Claude Code as instant technical sounding boards made experimentation faster and smoother. They were not mentors, but tireless co-pilots who never slept.
+AI helped a lot here too. Even with my background, having ChatGPT and Claude Code to bounce ideas off made experimenting much faster. I go into that in [How AI Became My Infrastructure Co-Pilot](../how-ai-became-my-infrastructure-co-pilot/).
 
-## Learning from Mistakes
+## The Mistake I Should Have Seen Coming
 
-Eventually, the cracks began to show. Running the Omada controller as software on my NAS was a mistake. Whenever the NAS went down, even for a moment, I lost access to the entire network's management plane.
+I ran the Omada controller as software on my NAS. Every time the NAS went down, even for a quick reboot, I lost management of my whole network.
 
-That painful realization reinforced a core infrastructure rule: **never put your management plane on top of the systems you are actively experimenting on**. The irony was that this was the exact pitfall I constantly warned enterprise customers about.
+> Don't run your management plane on the same systems you're experimenting on. The funny part is that I used to warn enterprise customers about exactly this.
+{: .prompt-warning }
 
-Moving the controller to dedicated hardware solved the problem instantly.
+I moved the controller onto its own hardware and the problem went away.
 
-## The Escalation Continues
+## Then It Kept Growing
 
-From there, the escalation continued.
+I bought a second Minisforum mini PC and built a Proxmox cluster. I moved LXCs over to Docker containers, set up Kubernetes and a bunch of VMs, connected them to Azure Arc, and added a site-to-site VPN to Azure. Somewhere in there it stopped feeling like a hobby and started looking like a small company's infrastructure running in my house.
 
-I bought another Minisforum mini PC and built a Proxmox cluster. I migrated LXCs into Docker containers, deployed Kubernetes, created VMs, connected them to Azure Arc, and set up a site to site VPN to Azure so my environment behaved like a real hybrid cloud. At some point, it stopped feeling like a hobby and started looking like a miniature enterprise running inside my house.
+Security was next. If I was going to expose anything to the internet, port forwarding wasn't going to cut it. I wanted real inspection and proper control over what comes in and goes out, so I ordered a ProtectCLI firewall board and started redesigning the perimeter around zero-trust ideas. The bigger the setup gets, the more I care about limiting how far a single problem can spread.
 
-Then came security. If I planned to expose services externally, I needed a real firewall, not simple port forwarding. I needed intelligent inspection, proper segmentation enforcement, and complete control over what entered and exited my network. So I ordered a ProtectCLI firewall board and began redesigning my perimeter with true zero trust principles. As environments grow, minimizing blast radius becomes essential.
+## Version 2
 
-## Version 2.0
+Meanwhile the cables were getting out of hand. I'd started with a 3D-printed 10-inch rack from Printables.com, which was fine for a while. Once there was more expensive hardware in it, though, I wanted something sturdier, so I moved to a **DeskPi T2** rack with proper mounting, cable management, and airflow.
 
-While this was happening, my cables multiplied like vines. Initially, I used a 3D printed 10 inch rack from Printables.com. It worked fine at first, but once the hardware became more expensive, the setup deserved something sturdier and cleaner. I upgraded to a DeskPi T2 rack, which offered proper mounting, cable routing, and airflow.
-
-**Version 2 of the homelab was born**: tidy, functional, and intentional.
+That's what I think of as version 2 of the homelab. It's tidy, and everything in it is there on purpose.
 
 ![The evolution from chaos to clean infrastructure](/assets/img/posts/server-rack.jpg)
 
-Now I am looking at my old gaming PC, wondering what role it should play next. Plex transcoder, backup NAS, another Kubernetes node, or something entirely different. The possibilities seem endless.
+I'm now eyeing my old gaming PC and trying to decide what it becomes. Maybe a Plex transcoder, a backup NAS, or another Kubernetes node. I haven't decided.
 
-## The Next Frontier: Local AI
+## What I Want to Try Next: Local AI
 
-The next frontier I hope to reach is local LLM hardware.
+Eventually I'd like to run LLMs locally. It would be a nice full circle, building something that cuts down on my ChatGPT and Claude subscriptions.
 
-It feels like a full circle, building an AI stack that can eventually reduce my ChatGPT and Claude subscriptions. From trip photos to private cloud to AI inference, the escalation has been wild.
+GPU and RAM prices are painful right now, so a dedicated AI machine is probably a year or two away. In the meantime I have a desktop with an **RTX 4080 Super**, and I want to see how far I can get running 70B models on it.
 
-I am not there yet, since GPU and RAM prices are extremely high. A dedicated AI rig will have to wait another year or two. For now, I plan to optimize what I already have. My desktop with an RTX 4080 Super is next on the list, and I want to experiment with running 70B models locally to understand what is possible with consumer hardware today.
+## What This Blog Is For
 
----
+Mostly, it's my notes. I want a place to write down what I learn, what catches me off guard, and what blows up in my face, since those are usually the most useful lessons. I'm getting more into agentic AI and automation in the lab, so expect a fair amount of that too.
 
-## So What Is This Blog For?
+Roughly, here's what I'm planning to write about:
 
-This blog is not only a story of how my homelab began. It is the beginning of a long term documentation effort, one where I share the lessons I learn, the mistakes I make, and the architecture patterns that work or fail.
+| Theme | Topics |
+|---|---|
+| **Origins** | How it started, and how AI became part of how I work |
+| **Foundation** | Hypervisors, networking, Terraform, Ansible, documentation |
+| **Containers** | Docker patterns, Traefik, Authentik, the media stack |
+| **Observability** | Prometheus, Grafana dashboards, alerting |
+| **Automation** | Discord bots, CI/CD pipelines, scheduled tasks |
+| **Advanced topics** | Kubernetes, hybrid cloud with Azure Arc, zero-trust networking |
+| **Lessons learned** | Mistakes, real costs, and what I'd do differently |
 
-Here, I plan to write about:
+## Looking Back
 
-* The lessons I learn
-* The gotchas that catch me off guard
-* The best practices I discover
-* The failures that teach me more than successes
-* The security principles I reinforce
-* The experiments that succeed
-* The experiments that explode
+None of this was planned. I wanted somewhere safe to keep my Japan photos and a place to keep learning, and every step after that was me fixing whatever the last step exposed.
 
-As I continue exploring agentic AI automation, self healing infrastructure, and AI driven workflows inside my ecosystem, I plan to document those journeys as well. If my homelab is going to evolve, I want this blog to evolve alongside it.
-
-## What's Coming
-
-This blog will cover my homelab journey across several themes:
-
-- **Origins** — How it all started and why AI became my infrastructure co-pilot
-- **Foundation** — Hypervisors, networking, Terraform, Ansible, and documentation strategies
-- **Containerization** — Docker patterns, Traefik, Authentik, and the complete media stack
-- **Observability** — Monitoring with Prometheus, Grafana dashboards, and alerting
-- **Automation** — Discord bots, CI/CD pipelines, and scheduled task management
-- **Advanced Topics** — Kubernetes, hybrid cloud with Azure Arc, and zero-trust networking
-- **Lessons Learned** — Mistakes I made, the true costs, and what I'd do differently
-
-Each post will dive into what I built, why I built it, and the gotchas I encountered along the way.
-
----
-
-This homelab is no longer just a project. **It is an ecosystem.**
-And this blog is where the ecosystem gets recorded, refined, and shared.
-
-Version 2 of my homelab is complete.
-Version 3 is already forming in my head.
-Somewhere beyond that, version 10 is waiting.
-
-**Stay tuned. The journey is just getting started.**
+If you're thinking about starting a homelab, I'd say start with whatever is actually bugging you. A full Google Photos account, a slow network, an old Pi in a drawer. You'll figure out the rest as you go. Version 2 of mine is done, and I'm already thinking about version 3.

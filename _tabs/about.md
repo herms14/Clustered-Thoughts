@@ -4,7 +4,7 @@ icon: fas fa-info-circle
 order: 4
 ---
 
-## Hey, I'm Hermes 👋
+## Hey, I'm Hermes
 
 I'm a cloud and solution architect based in the Philippines. In 2023 I fell into homelabbing by accident: I wanted somewhere to keep my Japan trip photos without paying for another cloud subscription. That turned into a Proxmox cluster, a few dozen self-hosted services, and lately a small team of AI agents that help me run it all.
 

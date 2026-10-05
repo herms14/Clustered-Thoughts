@@ -9,88 +9,73 @@ tags:
 - automation
 - claude
 - devops
-description: How Claude Code accelerated my homelab journey by 10x - real examples, workflows, and lessons learned
+description: How Claude Code sped up my homelab work, with real debugging sessions, the CLAUDE.md setup, and the limits I've learned to respect
 image:
   path: /assets/img/posts/ai-brain.jpg
   alt: AI neural network visualization
 render_with_liquid: false
 ---
 
-It all started with frustration.
+> This post is about how I use Claude Code, an AI coding agent that runs in my terminal, to build and run my homelab. I cover what it's good at, a few real debugging sessions, the `CLAUDE.md` file that keeps it useful from one session to the next, and where it falls short. It follows on from my [origin story](../my-accidental-journey-into-homelabbing/), but you don't need to read that first.
 
-When I started building my homelab seriously in late 2024, I was already using ChatGPT occasionally for coding questions and architectural decisions. Need to decide between a monolithic Docker Compose stack or splitting services across multiple hosts? Ask the AI to weigh the tradeoffs. Unsure whether to expose a service via Cloudflare Tunnels or a self-hosted reverse proxy? Get a breakdown of security implications in seconds.
+When I started taking the homelab seriously in late 2024, I was already using ChatGPT now and then. I'd ask it things like whether to run one big Docker Compose stack or split services across hosts, or whether Cloudflare Tunnels made more sense than my own reverse proxy. Useful, but it was still me copying things back and forth.
 
-But something shifted when I discovered Claude Code - an AI that could actually see my terminal, read my files, and execute commands with my permission.
+Then I tried **Claude Code**, which can actually see my terminal, read my files, and run commands once I say yes. The first time it fixed a Prometheus query I'd been stuck on for hours, I realized this was a different kind of tool. It felt more like working with a colleague who never gets tired of my questions.
 
-The first time it debugged a Prometheus query that had been frustrating me for hours, I realized this was not just a fancy autocomplete. It was a genuine collaborator. One that never got tired, never judged my mistakes, and never forgot a syntax pattern once it had seen my codebase.
-
-That moment changed how I approached every homelab project that followed.
+I've used it for almost every homelab project since. These are my notes on what that looks like day to day.
 
 ![Code and AI working together](/assets/img/posts/code-screen.jpg)
 
----
+## What It's Good At
 
-## What AI Does Well
+### Getting Unstuck Quickly
 
-### 1. Instant Technical Sounding Board
+Before this, troubleshooting meant Reddit, Stack Overflow, and a lot of documentation. Post a question, wait, try something, post again. For tricky infrastructure problems that could take days.
 
-Before AI, I would spend hours on Reddit, Stack Overflow, and technical documentation trying to understand why something was not working. The feedback loop was slow: post a question, wait for responses, try the suggestions, post again when they did not work. With complex infrastructure issues, this cycle could stretch across days.
-
-Now I can describe the problem in plain English and get targeted suggestions immediately. The AI can read my configuration files, check my logs, and propose solutions based on my actual setup rather than generic advice.
-
-**Real example from my session logs:**
+Now I describe the problem in plain English and Claude reads my actual configs and logs before suggesting anything. A real example from my session logs:
 
 > "Glance container can't reach my Media Stats API on localhost:5054"
 
-Claude immediately identified the issue: Docker containers have isolated network namespaces. `localhost` inside the container refers to the container itself, not the host machine. The container was trying to connect to itself, not to the API running on the Docker host.
+Claude pointed out that `localhost` inside a Docker container means the container itself, not the host, because containers get their own network namespace. Switching to `172.17.0.1` (the Docker bridge gateway) let the container reach the API on the host.
 
-The fix was straightforward once you understood the problem: use `172.17.0.1` (the Docker bridge gateway IP) instead of `localhost`. This allows the container to route traffic back to the host machine where the API was actually running.
+That took about five minutes. On my own, I'd probably have spent an hour digging through search results for "docker container localhost connection refused."
 
-That debugging session took 5 minutes. Without AI, it might have taken hours of Googling "Docker container localhost connection refused" and wading through dozens of Stack Overflow answers before finding the relevant one.
+### Keeping Things Consistent
 
-### 2. Pattern Recognition Across Codebases
+This one doesn't get talked about much. When I needed a new Discord bot, Claude looked at the ones I already had (Argus for container monitoring, Mnemosyne for media notifications) and wrote the new one the same way: same logging format, same channel restrictions, same error messages, same environment variables and Docker Compose layout.
 
-One of the most underrated capabilities of AI assistants is their ability to recognize and replicate patterns from your existing code. This is not about generating boilerplate from scratch. It is about maintaining consistency as your codebase grows.
+I could do that by hand. It's just tedious, and I'd get it slightly wrong every time.
 
-When I needed to add a new Discord bot to my homelab management suite, Claude could examine my existing bot implementations (Argus for container monitoring, Mnemosyne for media notifications) and generate a new one that followed the same conventions:
+### Keeping the Docs Up to Date
 
-- Same logging format with timestamps and severity levels
-- Same channel restriction checks to prevent commands in wrong channels
-- Same error handling patterns with user-friendly messages
-- Same configuration structure using environment variables
-- Same Docker Compose patterns for deployment
+Docs going stale is a constant problem. You change something, forget to update the notes, and three months later the instructions don't match reality.
 
-This kind of consistency is tedious to maintain manually but trivial for an AI that can see all your code at once.
-
-### 3. Documentation That Stays In Sync
-
-Documentation rot is one of the biggest challenges in any infrastructure project. You make a change, forget to update the docs, and three months later you are staring at outdated instructions wondering why nothing works.
-
-My homelab documentation exists in three places:
+My docs live in three places:
 
 | Location | Purpose | Audience |
 |----------|---------|----------|
-| `docs/` folder | Technical reference with exact commands | Future me debugging at 2 AM |
+| `docs/` folder | Technical reference with exact commands | Me, debugging at 2 AM |
 | GitHub Wiki | Beginner-friendly explanations | Anyone following along |
-| Obsidian Vault | Personal notes including credentials | Me only, synced via OneDrive |
+| Obsidian vault | Personal notes, including credentials | Just me, synced via OneDrive |
 
-Claude helps keep these synchronized. When I make a change, it can update all three locations following the established conventions I have documented. A single service deployment might require updating `docs/SERVICES.md`, the wiki's service catalog page, and my personal Obsidian notes with any new credentials.
+When I deploy something new, Claude updates all three: `docs/SERVICES.md`, the wiki's service list, and my Obsidian notes. That only works because of one file.
 
-#### The CLAUDE.md System
+## The CLAUDE.md File
 
-This synchronization only works because I invested time in creating a `CLAUDE.md` file at the root of my repository. Think of it as an instruction manual for any AI that works on my codebase. It contains:
+Claude doesn't remember anything between sessions. Each new conversation starts from scratch, and so does every session that runs out of context.
 
-- **Infrastructure overview**: IP addresses, network topology, service locations
-- **Documentation locations**: Where each type of documentation lives and how they differ
-- **Conventions**: Naming patterns, file structures, commit message formats
-- **Protected configurations**: Things that should never be modified without explicit permission
-- **Multi-session workflow**: How to pick up work from previous sessions
+> If you take one thing from this post, it's this: the AI only knows what you've written down for it.
+{: .prompt-info }
 
-Here is the critical insight: **Claude does not remember anything between sessions.** Every time I start a new conversation or run out of context tokens, it is a fresh start. The CLAUDE.md file solves this by giving every new session immediate access to the full context of my infrastructure.
+So I keep a `CLAUDE.md` at the root of my repo. It's basically an operating manual for any AI working on my infrastructure. It has my IPs and network layout, where each service runs, where each kind of doc goes, naming conventions, and commit message format.
 
-#### Multi-Session Continuity
+There's also a "Protected Configurations" section listing things Claude must not change without asking me. I added that after accidentally breaking a Grafana dashboard.
 
-Beyond CLAUDE.md, I maintain several context files in a `.claude/` directory:
+The file started as a list of IPs and URLs. I add to it whenever something comes up that I don't want to explain twice, and every few weeks I spend half an hour cleaning it up. That half hour saves me a lot of repeating myself.
+
+### Picking Up Where I Left Off
+
+I also keep a few files in a `.claude/` folder:
 
 ```
 .claude/
@@ -100,62 +85,25 @@ Beyond CLAUDE.md, I maintain several context files in a `.claude/` directory:
 └── context.md          # Detailed infrastructure reference
 ```
 
-When I start a new session, Claude reads these files first. If a previous session ran out of tokens mid-task, the `active-tasks.md` file contains:
+Claude reads these at the start of each session. If the last session ran out of tokens halfway through something, `active-tasks.md` says what got done, what's left, and how to continue. I can have a few Claude sessions open in different terminals, or come back the next day, and nothing gets lost.
 
-- What was completed
-- What remains to be done
-- Specific instructions for resuming
+### Tutorials for Later
 
-This system means I can spin up multiple Claude instances in different terminal windows, or come back the next day after token exhaustion, and pick up exactly where I left off. The AI essentially "remembers" through documentation rather than persistent memory.
+After any complicated setup, I ask Claude to write it up as a step-by-step tutorial in my Obsidian vault. When I set up Authentik with Traefik ForwardAuth, for example, I ended up with prerequisites, the exact config files with comments, the gotchas, how to check it worked, and what to do when it doesn't.
 
-### 4. Learning Accelerator
+Months later, when I need to change it, I have a guide written against my own setup instead of someone else's paths and networks.
 
-Complex infrastructure concepts used to require hours of reading documentation, watching tutorials, and trial-and-error experimentation. Topics like:
+## Some Real Debugging Sessions
 
-- Prometheus relabeling and metric transformation
-- Traefik middleware chains and ForwardAuth flows
-- Authentik provider configuration and group mappings
-- Terraform state management and module patterns
+### DNS Working on One VM but Not the Other
 
-I understand these faster when I can ask "why does this work?" and get an explanation tailored to my specific configuration. Not a generic tutorial, but an explanation that references my actual files.
-
-#### Tutorial Generation for Future Reference
-
-Beyond real-time explanations, I have developed a habit of asking Claude to generate detailed tutorials for complex deployments. These get stored in my Obsidian vault under a dedicated folder.
-
-For example, after deploying Authentik with Traefik ForwardAuth, I asked Claude to document the entire process step-by-step. The resulting tutorial includes:
-
-- Prerequisites and dependencies
-- Exact configuration files with inline comments
-- Common gotchas and how to avoid them
-- Verification steps to confirm everything works
-- Troubleshooting section for known issues
-
-Six months from now, when I need to modify the setup or replicate it, I have a complete reference written by the same AI that helped me build it originally. The tutorial reflects my exact infrastructure, not some generic guide that might use different directory structures or network configurations.
-
----
-
-## Real Debugging Sessions
-
-Let me share some actual debugging sessions that demonstrate how AI-assisted troubleshooting works in practice.
-
-### The DNS Resolution Mystery
-
-After deploying several VMs via Terraform, I noticed something strange: some containers could resolve internal DNS names while others could not. The same queries would work from one VM but fail from another, even though they were on the same network segment.
-
-I described the symptoms to Claude:
+After deploying a few VMs with Terraform, containers on some of them could resolve internal names and others couldn't, even though they were on the same network.
 
 > "docker-utilities can resolve gitlab.hrmsmrflrii.xyz but docker-media gets NXDOMAIN"
 
-The debugging process was methodical:
+We went through it in order. Both VMs had the same `/etc/resolv.conf` pointing at my Pi-hole (`192.168.90.53`), so it wasn't a config difference. Running `dig` on both hosts gave the right answer, so the DNS server was fine.
 
-1. **Check the basics**: Both VMs had the same `/etc/resolv.conf` pointing to my Pi-hole DNS server at `192.168.90.53`. That ruled out configuration drift.
-
-2. **Test DNS directly**: Using `dig` from both hosts showed the same results - the DNS server was responding correctly to both.
-
-3. **Check Docker's DNS**: Here was the problem. Docker containers use their own DNS resolution, configured in `/etc/docker/daemon.json`. On docker-media, this file was missing, so Docker was using its default DNS servers (Google's 8.8.8.8) instead of my internal DNS.
-
-4. **The fix**: Create the daemon.json file with the correct DNS settings and restart Docker:
+The problem turned out to be Docker. Containers use Docker's DNS settings from `/etc/docker/daemon.json`, and on docker-media that file didn't exist, so Docker was falling back to Google's `8.8.8.8`. Creating the file and restarting Docker fixed it:
 
 ```json
 {
@@ -163,25 +111,15 @@ The debugging process was methodical:
 }
 ```
 
-The whole session took about 10 minutes. Without AI, I might have spent hours checking firewall rules, VLAN configurations, or network ACLs before realizing the problem was Docker-specific.
+About ten minutes in total. I'm fairly sure I would have gone through firewall rules and VLAN ACLs first if I'd been on my own.
 
-### The Path Mismatch Nightmare
+### The Empty Jellyfin Library
 
-Jellyfin showed an empty media library even though Radarr and Sonarr reported that movies and TV shows were successfully downloaded. The files existed on disk, but Jellyfin could not see them.
+Jellyfin showed nothing, but Radarr and Sonarr said everything had downloaded and imported fine. The files were on disk, and I was using more storage than I expected.
 
-This one was a classic homelab gotcha involving Docker volume mounts and hardlinks.
+Download clients were saving to `/downloads/movies`, while Radarr's root folder was `/data/media/movies`. Those were two separate Docker volume mounts pointing at different folders on the host. The ARR apps use hardlinks to "move" finished downloads without copying them, and hardlinks only work inside a single filesystem. So nothing could be linked, and some files ended up duplicated.
 
-**The symptoms:**
-- Radarr logs showed successful downloads and imports
-- Files existed in `/downloads/movies/` on the host
-- Jellyfin library scan found nothing
-- Storage usage seemed higher than expected
-
-**Root cause**: The ARR stack was configured with inconsistent paths. Download clients saved to `/downloads/movies`, but Radarr's root folder was set to `/data/media/movies`. These were different Docker volume mounts pointing to different host directories.
-
-This matters because the ARR applications use hardlinks to "move" completed downloads to the media library instantly without copying data. Hardlinks only work within the same filesystem. My configuration had downloads on one mount and media on another, making hardlinks impossible.
-
-Claude helped me redesign the entire path structure:
+Claude helped me move everything under one shared mount:
 
 ```
 /data/
@@ -191,30 +129,19 @@ Claude helped me redesign the entire path structure:
     └── movies/     # Radarr root folder, same filesystem
 ```
 
-With a unified `/data` mount shared across all containers, hardlinks work correctly and storage usage dropped by 40% (no more duplicate files).
+With every container sharing `/data`, hardlinks started working, and my storage use dropped by about 40%.
 
-### The GitLab 403 Forbidden
+### GitLab Returning 403
 
-My Chronos Discord bot suddenly could not close GitLab issues. The error was frustratingly vague: `403 Forbidden`.
+My Chronos Discord bot suddenly couldn't close GitLab issues and just got `403 Forbidden` back.
 
-This is where AI debugging really shines - it can systematically eliminate possibilities:
+We checked the token first, and it was valid. It had `api` scope, which covers issues. Then we looked at the project members:
 
-**Step 1: Verify token validity**
-```bash
-curl -H "PRIVATE-TOKEN: $TOKEN" https://gitlab.example.com/api/v4/user
-```
-Result: Token was valid, returned user information.
-
-**Step 2: Check token scopes**
-The token had `api` scope, which should allow full API access including issue management.
-
-**Step 3: Check project membership**
 ```bash
 curl -H "PRIVATE-TOKEN: $TOKEN" https://gitlab.example.com/api/v4/projects/2/members
 ```
-Found the issue! The token belonged to one user, but the project only listed a different user as a member.
 
-**The fix**: Add the correct user to the project via GitLab's rails console:
+The token belonged to a user who wasn't a member of the project. Adding them from the GitLab rails console fixed it:
 
 ```ruby
 user = User.find_by(username: 'myuser')
@@ -222,206 +149,110 @@ project = Project.find(2)
 project.add_member(user, :maintainer)
 ```
 
-Total debugging time: 15 minutes. The systematic approach eliminated dead ends quickly.
+Fifteen minutes, mostly because we ruled things out in a sensible order instead of guessing.
 
----
+## Where It Falls Short
 
-## What AI Cannot Do
+**It can't use web UIs.** Claude can't log into Proxmox or Authentik's admin page or click around in Grafana. For anything that only lives in a browser, I take screenshots, describe what I see, and make the change myself.
 
-Understanding AI limitations is just as important as leveraging its strengths. Here is what I have learned about the boundaries.
+**It can't decide my architecture.** It can lay out the trade-offs. Only I know whether this lab is going to grow, how much time I want to spend on it, how much downtime I'm OK with, and whether I'll still want to maintain something in two years.
 
-### 1. Access External Services Directly
+**It doesn't know what I changed by hand.** If I SSH in and edit a file myself, Claude has no idea until I tell it. This is the other reason the `CLAUDE.md` file matters so much.
 
-Claude cannot log into my Proxmox web UI, click through Authentik's admin panel, or interact with any service that requires a browser or graphical interface. For those tasks, I still need to:
+**It can't do the understanding for me.** Early on I pasted commands without really knowing what they did. When something broke, I couldn't fix it, and I wasn't learning anything.
 
-- Take screenshots and share them for analysis
-- Describe what I see on screen
-- Execute the suggested changes manually
+That last one changed how I work. Before Claude runs anything non-trivial, I ask it to explain what the command will do. For anything security-related or new to me, I check the official docs, because it does sometimes invent flags or suggest options that were removed years ago. And I try to understand why a fix works so I can handle the next one myself.
 
-This means configuration that lives in web UIs (like Omada Controller policies or Grafana dashboard layouts) requires more back-and-forth than file-based configuration.
-
-### 2. Make Judgment Calls About Architecture
-
-AI can present options with tradeoffs, but certain decisions require understanding my specific context:
-
-- **Growth trajectory**: Will this homelab stay small or expand to 10 nodes?
-- **Time investment**: Do I want to learn Kubernetes properly or just get something working?
-- **Risk tolerance**: How much downtime is acceptable during upgrades?
-- **Complexity budget**: Am I willing to maintain this in 2 years?
-
-Claude can help me think through these questions, but the final call is always mine. Architecture decisions that seem equivalent on paper often have very different long-term implications.
-
-### 3. Know What Changed Outside Our Conversation
-
-If I manually SSH into a server and edit a configuration file, Claude does not know until I tell it or ask it to read the file again. There is no persistent awareness of my infrastructure state.
-
-This is why the `CLAUDE.md` and `.claude/` documentation system matters so much. The AI's "memory" exists entirely in files that I maintain. When those files are accurate and up-to-date, Claude can work effectively. When they drift from reality, problems arise.
-
-#### How CLAUDE.md Grows Over Time
-
-My CLAUDE.md file started as a simple list of IP addresses and service URLs. Over months of collaboration, it has evolved into a comprehensive infrastructure manual:
-
-- New sections get added when patterns emerge (the "Protected Configurations" section came after I accidentally broke a Grafana dashboard)
-- Troubleshooting tips get documented after painful debugging sessions
-- Conventions get formalized when inconsistencies cause problems
-
-Every few weeks, I review the file and update it based on what has changed. This maintenance takes about 30 minutes but saves hours of re-explaining context in future sessions.
-
-### 4. Replace Understanding
-
-The biggest trap is accepting AI suggestions without understanding them. Early on, I would copy-paste commands and configurations without knowing why they worked. This created two problems:
-
-1. When things broke, I could not debug them myself
-2. I was not actually learning, just following instructions
-
-Now I have developed specific habits:
-
-#### Ask for Explanations Before Execution
-
-Before Claude runs any non-trivial command, I ask it to explain what the command does and why. For example:
-
-> "Before running that iptables command, explain what each flag does and what will change on my system"
-
-This slows things down slightly but ensures I understand what is happening. If the explanation reveals something I did not expect, I can ask questions before making changes.
-
-#### Verify Against Official Documentation
-
-For anything security-related or anything I have not seen before, I verify Claude's suggestions against official documentation. AI can hallucinate command flags that do not exist or configuration options that were deprecated years ago.
-
-#### Build Mental Models
-
-Instead of just fixing the immediate problem, I try to understand the underlying system well enough to fix similar problems myself. If Claude explains that Docker containers have isolated network namespaces, I make sure I understand what that means and why it matters, not just the specific IP address to use.
-
----
-
-## My Workflow
-
-After months of iteration, here is the workflow that works best for me:
+## How a Session Usually Goes
 
 ```
-1. Start fresh session or resume from active-tasks.md
+1. Start a fresh session, or resume from active-tasks.md
 2. Describe the problem or goal in plain language
 3. Let Claude investigate (read files, check logs, explore)
-4. Discuss proposed solutions - ask "why" questions
-5. Review any commands before execution
-6. Implement together, verifying each step
+4. Talk through the proposed fix and ask why
+5. Review any commands before they run
+6. Implement together, checking each step
 7. Update session-log.md with what was done
-8. Update relevant documentation (all three locations)
-9. Mark task complete in active-tasks.md
+8. Update the docs (all three places)
+9. Mark the task done in active-tasks.md
 ```
 
-This workflow transforms a solo homelab project into pair programming with an infinitely patient partner. The documentation steps at the end ensure that knowledge accumulates rather than getting lost when the conversation ends.
+Steps 7 to 9 are the boring part, but they're why the next session goes smoothly.
 
----
-
-## The Multiplier Effect
+## What I Got Done in a Month
 
 ![Dashboard showing infrastructure achievements](/assets/img/posts/dashboard.jpg)
 
-Here is a concrete accounting of what I have built with AI assistance over the past month:
+Here's roughly what I built with Claude's help in about a month:
 
 | Category | Items | Notes |
 |----------|-------|-------|
-| Discord Bots | 4 | Argus (monitoring), Mnemosyne (media), Chronos (tasks), Athena (AI queue) |
-| Grafana Dashboards | 5 | Proxmox cluster, Synology NAS, Omada network, Container status, Traffic analysis |
+| Discord bots | 4 | Argus (monitoring), Mnemosyne (media), Chronos (tasks), Athena (AI queue) |
+| Grafana dashboards | 5 | Proxmox cluster, Synology NAS, Omada network, container status, traffic analysis |
 | Custom APIs | 4 | Media Stats, Reddit integration, NBA Stats, Life Progress widget |
-| Documentation Pages | 25+ | Technical references, wiki pages, personal notes |
-| Ansible Playbooks | 15+ | Service deployments, configuration management, monitoring setup |
-| Terraform Modules | 3 | VM provisioning, LXC containers, network configuration |
+| Documentation pages | 25+ | Technical references, wiki pages, personal notes |
+| Ansible playbooks | 15+ | Service deployments, configuration management, monitoring setup |
+| Terraform modules | 3 | VM provisioning, LXC containers, network configuration |
 
-Would I have built all this without AI? Eventually, probably. But it would have taken 6 months instead of 3 weeks. The acceleration is not just about speed. It is about maintaining momentum. When every debugging session is quick, you stay motivated to tackle the next project. When problems drag on for days, you lose enthusiasm and the homelab stagnates.
+Could I have done this without AI? Probably, over six months or so instead of three weeks. The bigger difference for me was motivation. When problems get solved quickly, I want to start the next project. When something drags on for days, the whole lab stalls.
 
----
+## Things to Watch Out For
 
-## Common Pitfalls
+**Leaning on it too much.** If I can't debug something basic without Claude, I haven't learned it yet. Sometimes I ask it to walk me through the debugging instead of just giving me the answer.
 
-### 1. Over-Reliance
+**Running out of context.** Long conversations lose their early details. I start new sessions for new problems, point Claude at docs instead of re-explaining things, and use `active-tasks.md` to hand over between sessions.
 
-If you cannot debug a basic problem without AI, you have not learned enough. I make a deliberate point to understand solutions before implementing them. Sometimes I will ask Claude to guide me through debugging manually rather than just giving me the fix.
+**Made-up commands.** This happens more with older or niche tools, version-specific features, and Linux vs. macOS differences. I check anything I don't recognize, especially if it could delete data.
 
-The goal is augmented capability, not dependency.
+**Secrets in generated files.** AI will put credentials inline if it thinks that's helpful. I review every generated file before committing, use environment variables, and keep a strict `.gitignore`.
 
-### 2. Context Window Limits
+> Never commit an AI-generated file without checking it for hardcoded secrets first.
+{: .prompt-danger }
 
-Long conversations eventually hit token limits. When this happens, Claude loses access to earlier parts of the conversation and may forget important context. I have learned to:
+## If You Want to Try This
 
-- **Start fresh sessions for new problems** rather than continuing exhausted conversations
-- **Reference documentation files** instead of re-explaining context verbally
-- **Keep session logs** so the next Claude instance can read what happened before
-- **Use the active-tasks.md file** as a handoff document between sessions
+The most useful thing you can do is write your own `CLAUDE.md`. Mine started out looking something like this:
 
-### 3. Hallucinated Commands
+```markdown
+# Homelab notes for AI assistants
 
-AI sometimes suggests commands that do not exist, flags that were deprecated, or configuration options that are not supported by my specific version. This happens more often with:
+## Infrastructure
+- Hosts, IPs, and what runs where (keep this table current)
 
-- Older or less common tools
-- Version-specific features
-- Platform-specific variations (Linux vs macOS commands)
+## Documentation
+- docs/ = exact commands; wiki = beginner-friendly; vault = private notes
+- When you change infrastructure, update all three
 
-I always verify unfamiliar commands against official documentation before running them, especially anything that modifies system configuration or could cause data loss.
+## Conventions
+- Naming patterns, folder layout, commit message format
 
-### 4. Security Blindspots
+## Protected Configurations
+- Never modify these without asking me first: ...
 
-AI assistants try to be helpful, which sometimes means they will include sensitive information in generated code or configuration files. I have learned to:
+## Session Workflow
+- At start: read .claude/active-tasks.md and .claude/session-log.md
+- At end: update session-log.md and active-tasks.md
+```
 
-- Never commit AI-generated files without reviewing them for hardcoded secrets
-- Use environment variables and secrets management instead of inline credentials
-- Maintain a strong `.gitignore` to prevent accidental credential exposure
+It doesn't have to be complete. Mine grew one annoying problem at a time.
 
----
+## What I Want to Try Next
 
-## The Future
+I'd like to run models locally on my RTX 4080 Super, partly for privacy and partly so routine questions don't cost anything. I'm testing 70B models to see how far consumer hardware gets.
 
-The collaboration between homelabbers and AI is just beginning. Here is what I am exploring next:
+I'm also interested in agents that do more on their own: watching the infrastructure, noticing when something's off, and proposing a fix (or making it). My Athena bot, which queues tasks for AI to process, is a first small step in that direction.
 
-### Local LLMs
+The idea I keep coming back to is an AI that understands how everything connects, so I could ask "what depends on the DNS server?" or "what breaks if I restart Traefik?" That's harder than it sounds, but I think it would be worth it.
 
-Running language models locally on my RTX 4080 Super opens up possibilities:
-- **Privacy**: Infrastructure queries stay on my network
-- **Cost**: No API fees for routine questions
-- **Customization**: Fine-tuning on my specific codebase and documentation
+## Final Thoughts
 
-I am experimenting with 70B parameter models to understand what is possible with consumer hardware today.
+Using AI hasn't meant I need to understand my infrastructure less. It's actually the opposite. The better I know my own setup, the more useful Claude is. What it's taken off my plate is the tedious stuff: looking up syntax, keeping files consistent, and chasing down the same kinds of issues over and over. That leaves me more time for the parts I enjoy.
 
-### Agentic Automation
+If you're starting a homelab, I'd bring an AI assistant along, just not as a replacement for learning. Write things down early. The better your notes, the better it works.
 
-Current AI assistants require human approval for each action. The next frontier is autonomous agents that can:
-- Monitor infrastructure and detect anomalies
-- Propose and implement fixes with minimal oversight
-- Chain together multi-step operations
-
-My Athena bot is an early experiment here, queuing tasks for AI processing and tracking their status.
-
-### Knowledge Graphs
-
-Instead of flat documentation, imagine an AI that understands the relationships between your infrastructure components:
-- "Show me everything that depends on the DNS server"
-- "What will break if I restart the Traefik container?"
-- "Trace the path from external request to database query"
-
-This is harder than it sounds, but the payoff would be immense.
-
----
-
-## Conclusion
-
-AI has not replaced my need to understand infrastructure. If anything, it has amplified it. The better I understand my systems, the better I can collaborate with AI to extend them.
-
-What AI has replaced is the tedious parts: searching through documentation, remembering syntax, maintaining consistency across files, and debugging common issues. That frees up mental energy for the interesting parts: architecture decisions, security design, and building things that actually matter to me.
-
-The homelab has become a testbed for AI-augmented infrastructure management. Every experiment teaches me something new about both AI capabilities and infrastructure patterns. And every improvement to my documentation and workflow makes the AI more effective, creating a virtuous cycle.
-
-If you are starting your own homelab journey, consider bringing an AI co-pilot along. Not as a replacement for learning, but as an accelerator. Build the documentation habits early. Keep session logs. Maintain your context files. The investment pays dividends every single day.
-
----
-
-## What's Next
-
-In the next post, I will cover **choosing your hypervisor** - why I went with Proxmox over ESXi and Hyper-V, and how to set up a proper cluster from scratch.
-
----
+Next up is [choosing a hypervisor](../choosing-your-hypervisor-why-proxmox-won/), and why I went with Proxmox over ESXi and Hyper-V.
 
 ## Resources
 
-- [Claude Code](https://claude.ai/code) - The AI assistant I use for infrastructure work
-- [My GitHub Repository](https://github.com/herms14/Proxmox-TerraformDeployments) - Real session logs and documentation
+* [Claude Code](https://claude.ai/code), the AI assistant I use for infrastructure work
+* [My GitHub repository](https://github.com/herms14/Proxmox-TerraformDeployments), with real session logs and documentation

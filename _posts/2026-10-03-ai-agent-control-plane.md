@@ -12,21 +12,21 @@ tags:
 - homelab
 - proxmox
 - security
-description: Notes on designing secure access for Codex agents to manage my Proxmox cluster, discovering I'd already half-built the control plane months ago, and the cluster-wide root SSH lockout a bad shell command caused along the way.
+description: Notes on designing safe access for Codex agents to my Proxmox cluster, rediscovering an API I'd forgotten I built, and the cluster-wide root SSH lockout I caused with one bad shell redirect.
 render_with_liquid: false
 ---
 
-I've been running Claude Code against this homelab for months now — it reads my Obsidian vault, SSHes into whatever needs fixing, and keeps the docs honest. Lately I've been thinking about the next step: a container running multiple OpenAI Codex agents, each handling a slice of the homelab (monitoring, media stack, network), working more autonomously than a single assistant I babysit turn by turn.
+> This post is about the access layer I'm building so AI agents can work on my Proxmox cluster without me handing them my root keys. It covers the design, moving an old API I'd forgotten about into its own container, and an outage I caused in the middle of it. The agents themselves come later, in my post on [automating patch management with Codex](../codex-homelab-patch-management/).
 
-The obvious question came first: is that even a good idea? And the honest answer was "yes, but only if the access model is deliberate." Handing several autonomous agents SSH keys and API tokens to a cluster that's already had two credential-leak cycles into a public repo is not something to wing.
+I've been using Claude Code on this homelab for months now (I wrote about how that started in [How AI Became My Infrastructure Co-Pilot](../how-ai-became-my-infrastructure-co-pilot/)). It reads my Obsidian vault, SSHes into whatever needs fixing, and keeps my docs up to date. Lately I've been thinking about the next step: a container running several OpenAI Codex agents, each looking after one part of the lab (monitoring, the media stack, the network) and working on its own more than a single assistant I watch turn by turn.
 
-This post is my notes from actually building the access layer — which turned into rediscovering a tool I'd forgotten I'd built, relocating it, and, through a shell-quoting mistake, briefly locking myself out of root SSH on all three Proxmox nodes at once. All in one evening.
+The first question was whether that's even a good idea. I think it is, but only if I'm careful about what they can access. This cluster has already leaked credentials into a public repo twice. Giving a handful of unattended agents SSH keys and API tokens is not something I want to make up as I go.
 
----
+This post is my notes from building that access layer. It turned into finding a tool I'd forgotten I built, moving it somewhere sensible, and, thanks to one badly quoted shell command, locking myself out of root SSH on all three Proxmox nodes at once. All in one evening.
 
-## The design, before any of this started
+## The Plan
 
-Before touching anything, I asked Claude Code to sketch the access model. The core idea: agents never talk to hosts directly. Everything goes through one mediation layer, with scoped credentials on either side of it.
+Before touching anything, I asked Claude Code to help me sketch out how access should work. The main idea is that agents never talk to hosts directly. Everything goes through one API in the middle, and each side of it uses limited credentials.
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
@@ -40,44 +40,45 @@ Before touching anything, I asked Claude Code to sketch the access model. The co
           ▼                  ▼                  ▼
    One control-plane API (role-checked, logged)
           ▼
-   Proxmox / Synology / Omada — role-scoped tokens, not root
+   Proxmox / Synology / Omada (role-scoped tokens, not root)
 ```
 
-Four things made the actual difference, in order of how much I'd regret skipping them:
+The parts I'd most regret skipping, roughly in order:
 
-1. **Credential tiers, not one shared key.** An "observer" role that can only read status, and an "operator" role that can restart things — issued per agent, not copy-pasted from my own admin key.
-2. **Route anything destructive through an approval gate.** Not new machinery — I already had a Discord bot (more on that below) with a reaction-approval flow for container updates. Reuse that instead of building a second approval system.
-3. **Network segmentation that's actually least-privilege.** My admin workstation has a standing ACL rule granting it unrestricted access to every VLAN — convenient for me, and exactly the model agents should *not* get. A narrow, explicit allow-list instead.
-4. **Secrets that never touch the git-tracked vault.** Given the repo's history, this one wasn't optional.
+1. **Separate credentials per agent, with different levels.** An "observer" that can only read status and an "operator" that can restart things, each issued per agent. Not a copy of my own admin key.
+2. **Approval for anything destructive.** I already have a Discord bot that asks me to approve container updates with a reaction, so the plan is to reuse that instead of building a second approval system.
+3. **Network rules that actually limit access.** My own workstation has a rule letting it reach every VLAN. That's handy for me, and it's exactly what the agents shouldn't get. They get a short allow-list instead.
+4. **No secrets in the git-tracked vault.** After the leaks, this one wasn't up for debate.
 
-None of this is novel. It's the same shape as "don't give the intern the root password," just applied to something that runs unattended.
+None of this is new. It's the same reason you don't give the intern the root password, except this intern runs at 3 AM with nobody watching.
 
-## I'd already built half of this, four months ago
+## I Had Already Built Half of It
 
-Here's the part that actually made me laugh: when I went looking for where to put the mediation layer, I found out I already had one. Back in August I'd built — and apparently completely forgotten about — a FastAPI + CLI tool that wraps Proxmox, Synology, and my Omada controller behind one authenticated REST API. Real implementations, not stubs: proper token auth, retry-on-401, task polling. I'd named it Helios, deployed it in a Docker container on my Ansible box, and then just... never touched it again.
+This part made me laugh. When I went looking for somewhere to put that middle API, I found I already had one. Back in August I'd built a FastAPI and CLI tool that puts Proxmox, Synology, and my Omada controller behind one authenticated REST API, and then completely forgot about it. It wasn't a stub either. It had token auth, retries on 401s, and task polling. I'd called it **Helios**, deployed it in a Docker container on my Ansible box, and never looked at it again.
 
-When I checked on it this session, `docker ps` reported it as `unhealthy`. My first assumption was that it had quietly died months ago. It hadn't — the healthcheck itself was broken (it shelled out to `curl` inside a container image that never installed `curl`), while the actual app had been serving requests the entire time. A few months of "is this thing even alive" anxiety, over a Dockerfile missing one package.
+When I checked, `docker ps` said it was `unhealthy`, so I assumed it had died months ago. It hadn't. The healthcheck was calling `curl`, and `curl` was never installed in the image. The app itself had been answering requests the whole time.
 
 ```yaml
-# before — healthcheck fails because curl doesn't exist in the image
+# before: healthcheck fails because curl doesn't exist in the image
 healthcheck:
   test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
 
-# after — uses what's already in the python:3.12-slim base image
+# after: uses Python, which is already in the python:3.12-slim image
 healthcheck:
   test: ["CMD", "python3", "-c",
     "import urllib.request,sys; sys.exit(0 if urllib.request.urlopen('http://localhost:8000/health').status==200 else 1)"]
 ```
 
-> If a container's `docker ps` status and its actual logs disagree, trust the logs. A healthcheck is just another command that can be wrong, and it's usually the simpler thing to be wrong about.
+> If `docker ps` and the container logs disagree, believe the logs. A healthcheck is just another command, and it can be wrong too.
+{: .prompt-tip }
 
-Lesson filed away: a tool nobody's watching is a tool that's silently rotting, healthy or not. If Helios is going to be the thing Codex agents talk to, it needs a home I'll actually notice if it goes quiet.
+The thing I took from this: a tool nobody is watching slowly rots, whether it's healthy or not. If Helios is going to be what the agents talk to, it needs to live somewhere I'll notice when it stops responding.
 
-## Giving it an actual home
+## Moving Helios to Its Own LXC
 
-Helios living alongside Ansible on a general-purpose box was fine when I was the only thing calling it occasionally. It's not fine as the control plane for unattended agents — that deserves its own dedicated LXC, not a roommate.
+Having Helios share a general-purpose box with Ansible was fine when I was the only one using it, and only occasionally. For something unattended agents depend on, I wanted it on its own LXC.
 
-The one real decision here was Docker versus running it straight: this homelab has an open, unresolved bug where Docker-in-LXC fails to create new containers because unprivileged LXCs drop a capability Docker nesting needs. Helios is a single FastAPI app with modest dependencies — it doesn't need Docker at all. So: unprivileged LXC, plain Python venv, systemd unit. No capability dance, no privileged container, smaller blast radius if anything ever does go wrong with it.
+The only real decision was whether to keep Docker. There's an open issue in my lab where Docker inside an unprivileged LXC can't create new containers, because the LXC drops a capability Docker needs. Helios is one FastAPI app with a few dependencies and doesn't need Docker at all. So I went with an unprivileged LXC, a Python venv, and a systemd service. No privileged container, no capability workarounds.
 
 ```ini
 [Unit]
@@ -93,46 +94,55 @@ ExecStart=/home/hermes-admin/helios/venv/bin/python -m uvicorn api.main:app --ho
 Restart=on-failure
 ```
 
-Copied the code over (tarball, not `git clone` — it was never actually pushed to GitHub, just living on disk for four months), built the venv, enabled the service. Came up clean on the first try. Decommissioned the old Docker container. Fifteen minutes of real work.
+I copied the code over as a tarball, since it had never been pushed to GitHub and had just been sitting on disk for four months. Then I built the venv and enabled the service. It came up on the first try, and I shut down the old Docker container. About fifteen minutes of actual work.
 
-Except it wasn't fifteen minutes, because of what happened in the middle.
+Except it took a lot longer than fifteen minutes, because of what happened in between.
 
-## The part where I locked myself out of my own cluster
+## How I Locked Myself Out of My Own Cluster
 
-Bootstrapping the new LXC meant pushing an SSH key into it. I ran something shaped like this — a command through four layers of shell (PowerShell, over SSH, into `pct exec`, into bash):
+To set up the new LXC I needed to put an SSH key in it. I ran something like this, which went through four layers of shell: PowerShell, then SSH, then `pct exec`, then bash.
 
 ```
 pct exec 210 -- bash -c "echo '$pub' > /root/.ssh/authorized_keys"
 ```
 
-The quoting broke across those layers. The redirect executed in the *hypervisor node's own shell*, not inside the container — and truncated the node's `/root/.ssh/authorized_keys` to zero bytes.
+The quoting got mangled somewhere along the way. The `>` redirect ran on the Proxmox node itself instead of inside the container, and it wiped the node's `/root/.ssh/authorized_keys` to an empty file.
 
-My first assumption was that this was annoying but contained: one node, one file, I'd fix it and move on. It was not contained. On Proxmox, `/root/.ssh/authorized_keys` on every cluster node is a symlink to `/etc/pve/priv/authorized_keys` — a single file synced cluster-wide by the Proxmox filesystem. I hadn't broken SSH to one node. I'd broken root SSH to all three, simultaneously, with one bad redirect.
+I figured that was annoying but limited to one node. It wasn't. On Proxmox, `/root/.ssh/authorized_keys` on every node is a symlink to `/etc/pve/priv/authorized_keys`, which is one file shared across the whole cluster. So I hadn't broken root SSH on one node. I'd broken it on all three at the same time.
 
-> The cluster itself was never at risk — `pvecm status` showed full quorum the entire time. Corosync, the VMs, the LXCs, none of it even noticed. This was purely "the door I usually walk through is gone," not "the building is on fire." Worth knowing the difference before you panic.
+> **It wasn't as bad as it looked**
+> The cluster itself was fine the whole time. `pvecm status` showed full quorum, and none of the VMs or LXCs noticed anything. I'd lost my usual way in, but nothing was actually down. It helps to check that before panicking.
+{: .prompt-info }
 
-Recovery needed the one channel that doesn't depend on SSH: Proxmox's browser-based console. And even that had its own small comedy of errors — the console's clipboard paste kept mangling multi-line commands (stray characters, hung quote-continuation prompts, one `echo` that silently wrote zero bytes instead of the key). What actually worked was dropping into `nano` and pasting the key directly into the editor, sidestepping shell quoting altogether.
+The way back in was the Proxmox web console, since that doesn't need SSH. That had its own problems. Pasting into the console kept mangling multi-line commands. I got stray characters, quote prompts that wouldn't close, and one `echo` that quietly wrote an empty file. What finally worked was opening `nano` and pasting the key straight into the editor, so the shell never had a chance to mess with the quoting.
 
 ```bash
-# what didn't work reliably through the console paste:
+# didn't work reliably when pasted into the console:
 printf '%s\n' "ssh-ed25519 AAAA..." > /etc/pve/priv/authorized_keys
 
-# what did:
+# did work:
 nano /etc/pve/priv/authorized_keys
-# (paste the key line directly, Ctrl+O, Ctrl+X)
+# (paste the key line, Ctrl+O, Ctrl+X)
 ```
 
-Root SSH came back on all three nodes within a few minutes of switching approaches. No data loss, no cluster impact — just an object lesson in exactly how much blast radius a single `>` can have when it's three shell layers away from where you think it's running.
+Once I switched to `nano`, root SSH was back on all three nodes within a few minutes. No data lost and nothing on the cluster affected. It was a good reminder of how much damage one `>` can do when it runs somewhere other than where you think.
 
-The actual fix going forward is boring and correct: never pipe untrusted interpolation through more than one layer of shell quoting. Write the target content to a local file and copy it in — `scp`, or Proxmox's own `pct push` — instead of trying to get `bash -c "..."` to survive a round trip through PowerShell, SSH, and `pct exec`. I'd already used that safer pattern successfully earlier in the same session, for a completely unrelated file, and went around it anyway for this one. Consistency would have cost nothing.
+I'm changing two things because of it:
 
-There's a second, quieter finding in here too: that cluster-wide key file had no backup. One bad write and recovery depends entirely on console access being available. It's on the list now — an offline copy somewhere that isn't the git repo.
+1. **No more pushing file contents through nested shell quoting.** I'll write the file locally and copy it in with `scp` or `pct push`. The annoying part is I'd already done exactly that earlier the same evening for a different file, and then didn't bother this time.
+2. **An offline backup of that shared key file.** It didn't have one, so getting back in depended entirely on the console working. There's now a copy somewhere outside the git repo.
 
-## Where it actually landed
+## Finishing the Move
 
-Once the LXC itself was sorted, the rest was straightforward: `hermes-admin` with the real working key (not the one my own credentials doc claimed was current — turned out that doc had been wrong since a rotation months ago that apparently never actually completed), passwordless sudo matching the rest of the fleet, Python venv, systemd unit, cutover, decommission the old container. End to end verified against live cluster data within the hour.
+After that, the rest went smoothly:
 
-I also wanted the CLI itself usable from my own desktop, not just over SSH — and hit the same wall I'd apparently hit back in August and forgotten about: pip installs on this Windows machine fail a TLS handshake against PyPI's CDN, system-wide, reproducible with plain `curl.exe`. Rather than debug Windows' TLS stack at 11pm, I wrapped the remote CLI in a one-line PowerShell function instead:
+* A `hermes-admin` user with the key that actually works. My credentials doc listed a different one, because a key rotation months ago never fully happened and I never updated the doc.
+* Passwordless sudo, the same as the rest of my machines.
+* The venv, the systemd service, the switchover, and shutting down the old container.
+
+Within the hour I'd tested it against live cluster data.
+
+I also wanted to use the CLI from my desktop without SSHing in first. Then I hit the same problem I'd apparently hit in August and forgotten: pip on this Windows machine fails a TLS handshake with PyPI's CDN. It happens system-wide, and plain `curl.exe` shows it too. It was 11 PM and I didn't want to debug Windows TLS, so I wrapped the remote CLI in a PowerShell function instead:
 
 ```powershell
 function helios {
@@ -141,23 +151,23 @@ function helios {
 }
 ```
 
-`helios compute nodes` now works from any terminal on my desktop, same as if it were installed locally. It's a proxy, not a real local install, and I know that — but it's the difference between a problem I solve tonight and a problem I solve never, and I'd rather have the short command today than a perfect one eventually.
+Now `helios compute nodes` works from any terminal on my desktop. It's really just SSH under the hood, but it means I have a usable command today instead of a perfect one someday.
 
-## What's actually left before any Codex agent touches this
+## What's Still Missing
 
-The relocation is done, but the *secure* part of "secure control plane" is still mostly unwritten:
+The move is done. Most of the security work isn't:
 
 | Done | Still open |
 |---|---|
-| Helios on its own dedicated, unprivileged LXC | Proxmox token behind Helios is still full-privilege, not role-scoped |
-| Runs via systemd, not a Docker container with known capability issues | No per-agent credentials exist yet — there's one Helios API key, for everyone |
-| Verified end-to-end against live cluster data | Network segmentation for an eventual agent-runner VM not built |
-| Short CLI access from my desktop | Approval-gate wiring from agents into the existing Discord bot not done |
+| Helios on its own unprivileged LXC | The Proxmox token Helios uses still has full privileges |
+| Runs under systemd instead of Docker-in-LXC | There's one Helios API key shared by everything, no per-agent keys yet |
+| Tested against live cluster data | The network segment for the agent VM isn't built |
+| A short CLI command on my desktop | Agents aren't hooked into the Discord approval flow yet |
 
-The honest summary: I spent an evening building the *host* for the control plane, and confirmed it works. I have not yet built the part that makes it safe to point an autonomous agent at. Those are different projects, and conflating them is exactly how you end up handing a bot your root key because the demo worked.
+So I spent an evening building a home for the control plane and confirming it works. I haven't built the parts that make it safe to point an unattended agent at it. Those are two separate jobs, and treating them as one is how people end up giving a bot their root key because the demo worked.
 
-## Closing thoughts
+## Final Thoughts
 
-None of the individual pieces here were hard. Fixing a healthcheck, moving a service to its own LXC, writing a systemd unit — any of these on their own is a ten-minute task. What actually cost time was the gap between "I checked this months ago" and "I know this is true right now" — Helios wasn't down, my credentials doc wasn't current, and my own assumption about blast radius was wrong twice in one session, in both directions (I underestimated the SSH incident's scope, and overestimated how broken Helios actually was).
+None of the individual tasks were hard. Fixing a healthcheck, moving a service to an LXC, writing a systemd unit: each one is ten minutes. Most of my time went into the gap between "I checked this a while ago" and "I know this is true right now." Helios wasn't down, my credentials doc was wrong, and I misjudged how bad things were twice in one evening. I thought the SSH mistake was smaller than it was, and I thought Helios was more broken than it was.
 
-If I take one thing into the next phase of this — actually wiring up Codex agents against it — it's that the boring safety habits (write to a file and copy it in, don't trust a cached assumption, verify instead of assume) matter more than the clever architecture around them. The architecture diagram survived the evening unchanged. My shell command did not.
+When I get to actually wiring Codex agents into this, I want to keep the boring habits. Copy files in instead of echoing them through three shells. Check things instead of trusting what I remember. The design held up fine that evening. My shell command didn't.
