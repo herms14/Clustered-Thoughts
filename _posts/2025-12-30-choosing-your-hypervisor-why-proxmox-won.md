@@ -1,21 +1,20 @@
 ---
-title: "Choosing Your Hypervisor: Why Proxmox VE Won"
-description: "Comparing Proxmox VE, VMware ESXi, and Hyper-V for homelab use - and why Proxmox emerged as the winner"
-date: 2025-12-30
-slug: choosing-your-hypervisor-why-proxmox-won
+title: 'Choosing Your Hypervisor: Why Proxmox VE Won'
+date: 2025-12-30 09:00:00 +0800
 categories:
-    - Homelab
-    - Infrastructure
+- Homelab
+- Infrastructure
 tags:
-    - proxmox
-    - virtualization
-    - hypervisor
-    - esxi
-    - hyper-v
-cover:
-    image: /Clustered-Thoughts/images/server-rack.jpg
-    alt: "Server infrastructure"
-    caption: "Choosing the right hypervisor is foundational"
+- esxi
+- hyper-v
+- hypervisor
+- proxmox
+- virtualization
+description: Comparing Proxmox VE, VMware ESXi, and Hyper-V for homelab use - and why Proxmox emerged as the winner
+image:
+  path: /assets/img/posts/server-rack.jpg
+  alt: Server infrastructure
+render_with_liquid: false
 ---
 
 Proxmox VE emerged as the best hypervisor for my homelab because it is free, enterprise-capable, hardware-agnostic, and operationally efficient. Compared to ESXi and Hyper-V, it delivers clustering, containers, and automation without licensing friction. My current two-node Proxmox cluster runs more than 18 virtual machines and LXC containers reliably on commodity hardware.
@@ -132,7 +131,7 @@ The Proxmox web UI is practical rather than decorative. It provides:
 
 Everything needed for daily operations is accessible without third-party tools.
 
-![Infrastructure that scales with your needs](/Clustered-Thoughts/images/network-cables.jpg)
+![Infrastructure that scales with your needs](/assets/img/posts/network-cables.jpg)
 
 ### Full API Coverage
 

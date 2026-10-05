@@ -1,20 +1,19 @@
 ---
-title: "How AI Became My Infrastructure Co-Pilot"
-description: "How Claude Code accelerated my homelab journey by 10x - real examples, workflows, and lessons learned"
-date: 2025-12-27
-slug: how-ai-became-my-infrastructure-co-pilot
+title: How AI Became My Infrastructure Co-Pilot
+date: 2025-12-27 09:00:00 +0800
 categories:
-    - Homelab
-    - Automation
+- Homelab
+- Automation
 tags:
-    - ai
-    - claude
-    - automation
-    - devops
-cover:
-    image: /Clustered-Thoughts/images/ai-brain.jpg
-    alt: "AI neural network visualization"
-    caption: "AI as a tireless infrastructure partner"
+- ai
+- automation
+- claude
+- devops
+description: How Claude Code accelerated my homelab journey by 10x - real examples, workflows, and lessons learned
+image:
+  path: /assets/img/posts/ai-brain.jpg
+  alt: AI neural network visualization
+render_with_liquid: false
 ---
 
 It all started with frustration.
@@ -27,7 +26,7 @@ The first time it debugged a Prometheus query that had been frustrating me for h
 
 That moment changed how I approached every homelab project that followed.
 
-![Code and AI working together](/Clustered-Thoughts/images/code-screen.jpg)
+![Code and AI working together](/assets/img/posts/code-screen.jpg)
 
 ---
 
@@ -317,7 +316,7 @@ This workflow transforms a solo homelab project into pair programming with an in
 
 ## The Multiplier Effect
 
-![Dashboard showing infrastructure achievements](/Clustered-Thoughts/images/dashboard.jpg)
+![Dashboard showing infrastructure achievements](/assets/img/posts/dashboard.jpg)
 
 Here is a concrete accounting of what I have built with AI assistance over the past month:
 
