@@ -3,7 +3,7 @@
 ```
 Obsidian vault                    this repo                     GitHub Pages
 07 HomeLab Things/                _posts/YYYY-MM-DD-slug.md     herms14.github.io/
-  Homelab Blog Posts/*.md  ─sync─▶  (Minimal Mistakes front matter)  ─push─▶  Clustered-Thoughts/posts/slug/
+  Homelab Blog Posts/*.md  ─sync─▶  (TeXt front matter)  ─push─▶  Clustered-Thoughts/posts/slug/
   publish: true
 ```
 
@@ -37,18 +37,18 @@ python scripts\sync_obsidian.py --push      # write _posts/, commit, push
 ```
 
 The converter:
-- maps front matter to Minimal Mistakes (`title`, `date` in +0800, `categories`, `tags`, `description`/`excerpt`, and the cover image as `header.overlay_image` + `header.teaser`)
+- maps front matter to TeXt (`title`, `date` in +0800, `categories`, `tags`, `excerpt`, and the cover image as `cover` + an `article_header` overlay with a dark gradient)
 - rewrites `/assets/...` images and `../slug/` post links to absolute `/Clustered-Thoughts/...` URLs
 - strips the duplicate `# Title` heading
 - turns `[[wikilinks]]` into plain text
-- converts Obsidian callouts (`> [!NOTE]`, `[!TIP]`, `[!WARNING]`, `[!DANGER]`) into Minimal Mistakes notices (`<div class="notice--info" markdown="1">`)
+- converts Obsidian callouts (`> [!NOTE]`, `[!TIP]`, `[!WARNING]`, `[!DANGER]`) into TeXt alerts: a single paragraph followed by `{:.info}`, `{:.success}`, `{:.warning}` or `{:.error}` on the next line (DANGER maps to `error`)
 - sets `render_with_liquid: false`, so `{{ }}` in code samples (Docker/Go templates) can't break the build
 
 Re-running is idempotent: unchanged posts are skipped. Editing the vault post and syncing again updates the live post.
 
 ## 3. Images
 
-Put images in `assets/img/posts/` in this repo and reference them as `/assets/img/posts/name.jpg`. The sync script adds the `/Clustered-Thoughts` base URL (Minimal Mistakes doesn't do this for post bodies). If you edit a post in `_posts/` directly, write `/Clustered-Thoughts/assets/img/posts/name.jpg`.
+Put images in `assets/img/posts/` in this repo and reference them as `/assets/img/posts/name.jpg`. The sync script adds the `/Clustered-Thoughts` base URL (TeXt only does this for front-matter images, not post bodies). If you edit a post in `_posts/` directly, write `/Clustered-Thoughts/assets/img/posts/name.jpg`.
 
 ## 4. Unpublish
 
