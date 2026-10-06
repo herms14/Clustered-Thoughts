@@ -96,7 +96,8 @@ def transform(text, source_name=""):
     body = re.sub(r"\]\(\.\./([a-z0-9-]+)/(#[\w-]+)?\)", rf"]({BASEURL}/posts/\1/\2)", body)
     body = convert_callouts(body)
 
-    out = {"title": title, "date": f"{date:%Y-%m-%d} 09:00:00 +0800", "categories": cats, "tags": tags}
+    out = {"title": title, "date": f"{date:%Y-%m-%d %H:%M:%S} +0800" if isinstance(date, dt.datetime)
+           else f"{date:%Y-%m-%d} 09:00:00 +0800", "categories": cats, "tags": tags}
     if desc:
         out["description"] = out["excerpt"] = " ".join(str(desc).split())
     if image:
@@ -122,7 +123,7 @@ def main():
     a = ap.parse_args()
 
     sources = [Path(f) for f in a.file] if a.file else [
-        p for p in sorted(VAULT.glob("*.md")) if should_publish(p.read_text(encoding="utf-8"))]
+        p for p in sorted(VAULT.rglob("*.md")) if should_publish(p.read_text(encoding="utf-8"))]
     if not sources:
         print("Nothing to publish (set `publish: true` in a vault post's front matter).")
         return 0
