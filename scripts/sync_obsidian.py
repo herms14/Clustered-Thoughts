@@ -137,8 +137,21 @@ def main():
         if not same and not a.dry_run:
             dest.write_text(content, encoding="utf-8", newline="\n")
             changed.append(dest)
+
+        # A post's date (or slug) can change between runs, which changes its output filename.
+        # Find and remove any older file for the same slug so it doesn't keep building at the
+        # same permalink (/posts/<slug>/) and winning the collision over the current one.
+        slug_m = re.match(r"\d{4}-\d{2}-\d{2}-(.+)\.md$", name)
+        if slug_m:
+            for stale in POSTS.glob(f"*-{slug_m.group(1)}.md"):
+                if stale.name == name:
+                    continue
+                print(f"{'would remove' if a.dry_run else 'removed'} stale duplicate: _posts/{stale.name}")
+                if not a.dry_run:
+                    stale.unlink()
+                    changed.append(stale)
     if a.push and changed:
-        subprocess.run(["git", "-C", str(REPO), "add", *map(str, changed)], check=True)
+        subprocess.run(["git", "-C", str(REPO), "add", "-A", "--", str(POSTS)], check=True)
         subprocess.run(["git", "-C", str(REPO), "commit", "-m", f"Publish {len(changed)} post(s) from Obsidian"], check=True)
         subprocess.run(["git", "-C", str(REPO), "push"], check=True)
     return 0
